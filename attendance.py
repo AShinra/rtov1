@@ -20,7 +20,6 @@ def user_info(fname: str):
     info_id = user_document['user_info']
     leave_id = user_document['leave_credits']
     leave_data_id = user_document['leave_data']
-    # user_events_id = user_document['user_events']
     calendar_events_id = user_document['user_events']
 
     # get related documents
@@ -38,9 +37,6 @@ def user_info(fname: str):
 
     leave_data_collection = get_collection('leave_data')
     leave_data_document = leave_data_collection.find_one({'_id': ObjectId(leave_data_id)})
-
-    # user_events_collection = get_collection('user_events')
-    # user_events_document = user_events_collection.find_one({'_id': ObjectId(user_events_id)})
 
     calendar_events_collection = get_collection('calendar_events')
     calendar_events_document = calendar_events_collection.find_one({'_id': ObjectId(calendar_events_id)})
