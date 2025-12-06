@@ -7,7 +7,7 @@ from admin_tools import user_management
 
 
 
-def main(fname: str, rights: str, department: str, team: str):
+def main(fname: str, rights: str):
 
     if rights == 'admin':
         menu_title = 'Admin Dashboard'
@@ -24,9 +24,6 @@ def main(fname: str, rights: str, department: str, team: str):
             <h2 style='text-align: left; color: #ffff; margin: 0; line-height: 1; padding: 0;'>
             {fname}👤
             </h2>
-            <h3 style='text-align: left; color: #ffff; margin: 0; line-height: 1; padding: 0;'>
-            Department: {department} - {team}
-            </h3>
             """,
             unsafe_allow_html=True)
         

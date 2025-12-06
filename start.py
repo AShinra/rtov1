@@ -73,21 +73,11 @@ if __name__ == '__main__':
         
     if st.session_state.logged_in:
         # main_start(st.session_state.fname, st.session_state.rights)
-        main(st.session_state.fname, st.session_state.rights, st.session_state.department, st.session_state.team)
+        main(st.session_state.fname, st.session_state.rights)
         with st.sidebar:
             if st.button('**Log Out**', use_container_width=True):
                 st.session_state.logged_in = False
-                st.rerun()
-            # num = random.randint(1, 6)
-            # verse, book = bible_verse(num)
-            # st.markdown(
-            #     f"""
-            #     <p style='text-align: left; color: #ccc; font-size: 14px; margin-top: 5px;'>
-            #     “{verse}”<br>
-            #     <i>— {book}</i>
-            #     </p>
-            #     """,
-            #     unsafe_allow_html=True)
+                st.rerun()           
 
     else:
         with st.sidebar:
