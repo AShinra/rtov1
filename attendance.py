@@ -37,7 +37,7 @@ def user_info(fname: str):
 
     leave_data_collection = get_collection('leave_data')
     leave_data_document = leave_data_collection.find_one({'_id': ObjectId(leave_data_id)})
-
+    
     calendar_events_collection = get_collection('calendar_events')
     calendar_events_document = calendar_events_collection.find_one({'_id': ObjectId(calendar_events_id)})
 
@@ -53,7 +53,7 @@ def user_info(fname: str):
             st.markdown(f"##### 📱Mobile: {info_document['mobile_number']}")
             st.markdown(f"#####")
         
-        cola, colb = st.columns(2)
+        cola, colb = st.columns([1, 2])
         with cola:
 
             leave_types = []
@@ -85,16 +85,24 @@ def user_info(fname: str):
         with colb:
             st.markdown("### Leave Credits")
             gradient_line()
-            colb1, colb2 = st.columns([2, 1])
+            colb1, colb2, colb3 = st.columns([2, 1, 1])
             with colb1:
                 st.markdown("#### Current")
             with colb2:
+                st.markdown("#### Used")
+            with colb3:
                 st.markdown("#### Balance")
             for leave_type in leave_types:
+
+
+
+
                 try:
                     with colb1:
                         st.markdown(f'##### {leave_type}({leave_credits_document[leave_type]}):')
                     with colb2:
+                        st.markdown(f'##### {len(leave_data_document[leave_type])}')
+                    with colb3:
                         st.markdown(f"##### {leave_credits_document[leave_type]-len(leave_data_document[leave_type])}")
                 except:
                     pass           
