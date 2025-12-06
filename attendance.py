@@ -1,0 +1,129 @@
+import streamlit as st
+from db import get_collection, get_leave_types
+from bson import ObjectId
+from my_calendar import my_calendar
+from datetime import datetime, time
+from common import gradient_line
+
+
+
+def user_info(fname: str):
+    
+    # get user collection data
+    user_collection = get_collection('users')
+    # get user document
+    user_document = user_collection.find_one({'name': fname})
+
+    # get related document ids
+    info_id = user_document['user_info']
+    leave_id = user_document['leave_credits']
+    leave_data_id = user_document['leave_data']
+    user_events_id = user_document['user_events']
+
+    # get related documents
+    info_collection = get_collection('users_info')
+    info_document = info_collection.find_one({'_id': ObjectId(info_id)})
+
+    leave_types_collection = get_leave_types()
+    leave_types_documents = leave_types_collection.find()
+
+    leave_credits_collection = get_collection('leave_credits')
+    leave_credits_document = leave_credits_collection.find_one({'_id': ObjectId(leave_id)})
+
+    leave_data_collection = get_collection('leave_data')
+    leave_data_document = leave_data_collection.find_one({'_id': ObjectId(leave_data_id)})
+
+    user_events_collection = get_collection('user_events')
+    user_events_document = user_events_collection.find_one({'_id': ObjectId(user_events_id)})
+
+
+    col1, col2 = st.columns([2, 3])
+    with col1:
+        gradient_line()
+        with st.container():   
+            st.markdown(f"## 👤{user_document['name']}")
+            gradient_line()
+            st.markdown(f"##### 🏬Department: {user_document['department']} - {user_document['team']}")
+            st.markdown(f"##### 🏠Address: {info_document['address']}")
+            st.markdown(f"##### 📱Mobile: {info_document['mobile_number']}")
+            st.markdown(f"#####")
+        
+        cola, colb = st.columns(2)
+        with cola:
+
+            leave_types = []
+
+            for document in leave_types_documents:
+                leave_types.append(document['name'])
+            
+            leave_types.sort()
+
+            with st.container():
+                st.markdown("### Leave Application")
+                gradient_line()
+                st.selectbox(
+                    label="Select Leave Type",
+                    options=leave_types,
+                    key='leave_type_selectbox',
+                    index=None,
+                    placeholder='Select Leave Type',)
+                st.date_input(
+                    label="Select Leave Date",
+                    key='leave_date_input',)
+                st.text_area(
+                    label="Reason for Leave",
+                    key='leave_reason_textarea')
+                st.button(
+                    label="Submit Leave Application",
+                    key='submit_leave_button',
+                    use_container_width='stretch')
+        with colb:
+            st.markdown("### Leave Credits")
+            gradient_line()
+            colb1, colb2 = st.columns([2, 1])
+            with colb1:
+                st.markdown("#### Current")
+            with colb2:
+                st.markdown("#### Balance")
+            for leave_type in leave_types:
+                try:
+                    with colb1:
+                        st.markdown(f'##### {leave_type}({leave_credits_document[leave_type]}):')
+                    with colb2:
+                        st.markdown(f"##### {leave_credits_document[leave_type]-len(leave_data_document[leave_type])}")
+                except:
+                    pass           
+    with col2:
+        my_calendar()
+
+        
+    if st.session_state.get('submit_leave_button'):
+        leave_type = st.session_state.leave_type_selectbox
+        leave_input = datetime.combine(st.session_state.leave_date_input, time.min)
+        leave_date = leave_input.strftime("%Y-%m-%d")
+        leave_reason = st.session_state.leave_reason_textarea
+
+        # get leave color
+        document = leave_types_collection.find_one({'name': leave_type})
+        leave_color = document['color']
+        
+        leave_data_collection.update_one(
+            {"_id": ObjectId(leave_data_id)},
+            {"$push": {leave_type: {
+                'start': leave_date,
+                'reason': leave_reason}}})
+        user_events_collection.update_one(
+            {"_id": ObjectId(user_events_id)},
+            {"$push": {"events": {
+                "title": leave_type,
+                "start": leave_date,
+                "backgroundColor": leave_color
+            }}})
+        st.toast("Leave application submitted!")
+        st.rerun()
+
+
+    
+    
+
+    
