@@ -62,12 +62,6 @@ if __name__ == '__main__':
     if 'fname' not in st.session_state:
         st.session_state.fname = ''
     
-    if 'department' not in st.session_state:
-        st.session_state.department = ''
-    
-    if 'team' not in st.session_state:
-        st.session_state.team = ''
-    
     ph = PasswordHasher()
     user_collection = get_collection('users')    
         
