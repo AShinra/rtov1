@@ -2,11 +2,21 @@ import streamlit as st
 from streamlit_option_menu import option_menu
 from common import gradient_line
 from attendance import user_info
+from admin_tools import user_management
 
 
 
 
 def main(fname: str, rights: str, department: str, team: str):
+
+    if rights == 'admin':
+        menu_title = 'Admin Dashboard'
+        menu_options = ['Home', 'User Management', 'Leave Management', 'Reports']
+        icons = ['house', 'people-fill', 'check-square', 'bar-chart']
+    else:
+        menu_title = 'User Dashboard'
+        menu_options = ['Home', 'Leave Management', 'Reports']
+        icons = ['house', 'check-square', 'bar-chart']
 
     with st.sidebar:
         st.markdown(
@@ -23,9 +33,9 @@ def main(fname: str, rights: str, department: str, team: str):
         gradient_line()
 
         selected_option = option_menu(
-            menu_title=None,
-            options=['Home', 'Leave', 'Reports'],
-            icons=['house', 'check-square', 'bar-chart'],
+            menu_title=menu_title,
+            options=menu_options,
+            icons=icons,
             menu_icon="cast",
             default_index=0,
             orientation="vertical",
@@ -40,8 +50,10 @@ def main(fname: str, rights: str, department: str, team: str):
         if st.session_state.reset_button:
             st.rerun()
     
-    if selected_option == 'Leave':
-        st.title('Leave Management')
+    if selected_option == 'Leave Management':
         user_info(fname)
+    
+    elif selected_option == 'User Management':
+        user_management()
     
     

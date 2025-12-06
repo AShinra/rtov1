@@ -8,6 +8,7 @@ from common import gradient_line
 
 
 def user_info(fname: str):
+    st.title("Leave Management")
     
     # get user collection data
     user_collection = get_collection('users')
@@ -15,12 +16,17 @@ def user_info(fname: str):
     user_document = user_collection.find_one({'name': fname})
 
     # get related document ids
+    role_id = user_document['role']
     info_id = user_document['user_info']
     leave_id = user_document['leave_credits']
     leave_data_id = user_document['leave_data']
-    user_events_id = user_document['user_events']
+    # user_events_id = user_document['user_events']
+    calendar_events_id = user_document['user_events']
 
     # get related documents
+    role_collection = get_collection('user_role')
+    role_document = role_collection.find_one({'_id': ObjectId(role_id)})
+
     info_collection = get_collection('users_info')
     info_document = info_collection.find_one({'_id': ObjectId(info_id)})
 
@@ -33,9 +39,11 @@ def user_info(fname: str):
     leave_data_collection = get_collection('leave_data')
     leave_data_document = leave_data_collection.find_one({'_id': ObjectId(leave_data_id)})
 
-    user_events_collection = get_collection('user_events')
-    user_events_document = user_events_collection.find_one({'_id': ObjectId(user_events_id)})
+    # user_events_collection = get_collection('user_events')
+    # user_events_document = user_events_collection.find_one({'_id': ObjectId(user_events_id)})
 
+    calendar_events_collection = get_collection('calendar_events')
+    calendar_events_document = calendar_events_collection.find_one({'_id': ObjectId(calendar_events_id)})
 
     col1, col2 = st.columns([2, 3])
     with col1:
@@ -43,7 +51,8 @@ def user_info(fname: str):
         with st.container():   
             st.markdown(f"## 👤{user_document['name']}")
             gradient_line()
-            st.markdown(f"##### 🏬Department: {user_document['department']} - {user_document['team']}")
+            st.markdown(f"##### 🏬Department: {role_document['department']}")
+            st.markdown(f"##### 💼Team: {role_document['team']}")
             st.markdown(f"##### 🏠Address: {info_document['address']}")
             st.markdown(f"##### 📱Mobile: {info_document['mobile_number']}")
             st.markdown(f"#####")
@@ -94,8 +103,7 @@ def user_info(fname: str):
                 except:
                     pass           
     with col2:
-        my_calendar()
-
+        my_calendar(role_document['team'])
         
     if st.session_state.get('submit_leave_button'):
         leave_type = st.session_state.leave_type_selectbox
@@ -112,10 +120,10 @@ def user_info(fname: str):
             {"$push": {leave_type: {
                 'start': leave_date,
                 'reason': leave_reason}}})
-        user_events_collection.update_one(
-            {"_id": ObjectId(user_events_id)},
+        calendar_events_collection.update_one(
+            {"_id": ObjectId(calendar_events_id)},
             {"$push": {"events": {
-                "title": leave_type,
+                "title": f'{fname}-{leave_type}',
                 "start": leave_date,
                 "backgroundColor": leave_color
             }}})
