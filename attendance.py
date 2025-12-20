@@ -6,7 +6,6 @@ from datetime import datetime, time
 from common import gradient_line
 
 
-
 def user_info(fname: str):
     st.title("Leave Management")
     
@@ -94,9 +93,6 @@ def user_info(fname: str):
                 st.markdown("#### Balance")
             for leave_type in leave_types:
 
-
-
-
                 try:
                     with colb1:
                         st.markdown(f'##### {leave_type}({leave_credits_document[leave_type]}):')
@@ -107,7 +103,10 @@ def user_info(fname: str):
                 except:
                     pass           
     with col2:
-        my_calendar(role_document['team'])
+
+        tab1, tab2 = st.tabs(['📅**Calendar**', '🔖**Summary**'])
+        with tab1:
+            my_calendar(role_document['team'])
         
     if st.session_state.get('submit_leave_button'):
         leave_type = st.session_state.leave_type_selectbox

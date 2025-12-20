@@ -3,6 +3,7 @@ from streamlit_option_menu import option_menu
 from common import gradient_line
 from attendance import user_info
 from admin_tools import user_management
+from my_clocks import flip_clock, digital_clock
 
 
 
@@ -19,6 +20,9 @@ def main(fname: str, rights: str):
         icons = ['house', 'check-square', 'bar-chart']
 
     with st.sidebar:
+
+        digital_clock()
+
         st.markdown(
             f"""
             <h2 style='text-align: left; color: #ffff; margin: 0; line-height: 1; padding: 0;'>
