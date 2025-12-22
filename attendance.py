@@ -49,8 +49,8 @@ def user_info(fname: str):
             gradient_line()
             st.markdown(f"##### 🏬Department: {role_document['department']}")
             st.markdown(f"##### 💼Team: {role_document['team']}")
-            st.markdown(f"##### 🏠Address: {info_document['address']}")
-            st.markdown(f"##### 📱Mobile: {info_document['mobile_number']}")
+            # st.markdown(f"##### 🏠Address: {info_document['address']}")
+            # st.markdown(f"##### 📱Mobile: {info_document['mobile_number']}")
             st.markdown(f"#####")
         
         cola, colb = st.columns([1, 2])
@@ -137,7 +137,23 @@ def user_info(fname: str):
                 index=None,
                 width=250)
             
-            st.dataframe(df[df['Name']==select_name])
+            if select_name:
+                df = df[df['Name']==select_name]
+                my_count = df.shape[0]
+                st.markdown(f'#### {select_name} - logs ({my_count})')
+                df = df.reset_index(drop=True)
+                df.insert(0, "No.", df.index + 1)
+                col21, col22 = st.columns([4,1])
+                with col21:
+                    st.dataframe(df, hide_index=True)
+                with col22:                
+                    st.write(df['Leave Type'].value_counts())
+            else:
+                st.markdown(f'#### All - logs')
+                df = df.reset_index(drop=True)
+                df.insert(0, "No.", df.index + 1)
+                st.dataframe(df, hide_index=True)
+
             
 
 
