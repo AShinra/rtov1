@@ -136,7 +136,7 @@ def user_info(fname: str):
             if user_role=='Member':
                 df = df[df['Name']==fname]
                 my_count = df.shape[0]
-                st.markdown(f'#### {select_name} - logs ({my_count})')
+                st.markdown(f'#### {fname} - logs ({my_count})')
                 df = df.reset_index(drop=True)
                 df.insert(0, "No.", df.index + 1)
                 col21, col22 = st.columns([4,1])
