@@ -83,13 +83,13 @@ def user_info(fname: str):
 
         st.markdown("### Leave Credits")
         gradient_line()
-        colb1, colb2, colb3 = st.columns([2, 1, 1])
+        colb1, colb2, colb3 = st.columns([4, 3, 4])
         with colb1:
             st.markdown("##### Current")
         with colb2:
             st.markdown("##### Used")
         with colb3:
-            st.markdown("##### Balance")
+            st.markdown("##### Available")
         for leave_type in leave_types:
 
             try:
@@ -170,7 +170,7 @@ def user_info(fname: str):
                             value=(default_start, default_end),
                             # tuple for date range
                             key='leave_date_range')
-                        
+
                     if select_name:
                         df = df[df['Name']==select_name]
                         
@@ -183,9 +183,11 @@ def user_info(fname: str):
                         df.insert(0, "No.", df.index + 1)
                         col21, col22 = st.columns([4,1])
                         with col21:
-                            st.dataframe(df, hide_index=True)
+                            st.dataframe(
+                                df,
+                                hide_index=True)
                         with col22:                
-                            st.write(df['Leave Type'].value_counts())
+                            st.dataframe(df['Leave Type'].value_counts())
                     else:
                         if team=='Management':
                             st.markdown(f'#### Operations Team - logs')

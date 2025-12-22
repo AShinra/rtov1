@@ -4,6 +4,7 @@ from common import gradient_line
 from attendance import user_info
 from admin_tools import user_management
 from my_clocks import flip_clock, digital_clock
+from bible_verses import get_random_bible_verse
 
 
 
@@ -22,6 +23,10 @@ def main(fname: str, rights: str):
     with st.sidebar:
 
         digital_clock()
+
+        st.markdown('# Word of GOD')
+        st.markdown(f'### {get_random_bible_verse()}')
+        st.markdown('##    ')
 
         st.markdown(
             f"""
@@ -50,6 +55,8 @@ def main(fname: str, rights: str):
         st.button(label='Reset', key='reset_button', use_container_width=True)
         if st.session_state.reset_button:
             st.rerun()
+    
+        
     
     if selected_option == 'Leave Management':
         user_info(fname)
