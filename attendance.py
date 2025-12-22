@@ -172,6 +172,9 @@ def user_info(fname: str):
                         df = df.reset_index(drop=True)
                         df.insert(0, "No.", df.index + 1)
                         st.dataframe(df, hide_index=True)
+            
+            else:
+                st.markdown('### No Logs to Display')
 
             
 
