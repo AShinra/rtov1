@@ -111,9 +111,7 @@ def user_info(fname: str):
             my_calendar(role_document['team'])
         with tab2:
             # get user role
-
             user_role = role_document['team'].split('-')[-1]
-            st.write(user_role)
 
             logs = my_events(role_document['team'])
             # st.write(logs)
@@ -131,8 +129,11 @@ def user_info(fname: str):
             # get unique list of user on the calendar
             users = set(df['Name'].to_list())
             
-            # sort alphabetically
-            users = sorted(users)
+            if user_role=='Member':
+                users = fname 
+            else:
+                # sort alphabetically
+                users = sorted(users)
 
             
             # add user list to the selection box
