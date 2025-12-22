@@ -114,8 +114,12 @@ def user_info(fname: str):
             user_role = role_document['team'].split('-')[-1]
 
             logs = my_events(role_document['team'])
-            # st.write(logs)
+            
+            # filter dataframe depending on role
             df = pd.DataFrame(logs)
+
+            if user_role=='Member':
+                df = df[df['title']==fname]
 
             # add new columns
             df[['Name', 'Leave Type']] = df['title'].str.split('-', expand=True)
@@ -127,14 +131,10 @@ def user_info(fname: str):
             df.rename(columns={'start': 'Date'}, inplace=True)
 
             # get unique list of user on the calendar
-            users = set(df['Name'].to_list())
-            
-            if user_role=='Member':
-                users = fname 
-            else:
-                # sort alphabetically
-                users = sorted(users)
-
+            users = set(df['Name'].to_list())    
+        
+            # sort alphabetically
+            users = sorted(users)
             
             # add user list to the selection box
             select_name = st.selectbox(
