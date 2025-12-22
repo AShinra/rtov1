@@ -112,6 +112,7 @@ def user_info(fname: str):
         with tab2:
             # get user role
             user_role = role_document['team'].split('-')[-1]
+            team = role_document['team'].split('-')[0]
 
             logs = my_events(role_document['team'])
             
@@ -168,7 +169,7 @@ def user_info(fname: str):
                         with col22:                
                             st.write(df['Leave Type'].value_counts())
                     else:
-                        st.markdown(f'#### All - logs')
+                        st.markdown(f'#### {team} - logs')
                         df = df.reset_index(drop=True)
                         df.insert(0, "No.", df.index + 1)
                         st.dataframe(df, hide_index=True)
