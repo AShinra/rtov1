@@ -134,7 +134,17 @@ def user_info(fname: str):
             users = sorted(users)
             
             if user_role=='Member':
-                ''''''
+                df = df[df['Name']==fname]
+                my_count = df.shape[0]
+                st.markdown(f'#### {select_name} - logs ({my_count})')
+                df = df.reset_index(drop=True)
+                df.insert(0, "No.", df.index + 1)
+                col21, col22 = st.columns([4,1])
+                with col21:
+                    st.dataframe(df, hide_index=True)
+                with col22:                
+                    st.write(df['Leave Type'].value_counts())
+
             else:
                 # add user list to the selection box
                 select_name = st.selectbox(
