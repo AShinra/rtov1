@@ -109,6 +109,8 @@ def user_info(fname: str):
         with tab1:
             my_calendar(role_document['team'])
         with tab2:
+            st.write(role_document['team'])
+
             logs = my_events(role_document['team'])
             # st.write(logs)
             df = pd.DataFrame(logs)
