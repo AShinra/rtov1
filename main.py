@@ -1,6 +1,6 @@
 import streamlit as st
 from streamlit_option_menu import option_menu
-from common import gradient_line, get_random_bible_verse
+from common import gradient_line
 from attendance import user_info
 from admin_tools import user_management
 from my_clocks import flip_clock, digital_clock
