@@ -131,6 +131,9 @@ def user_info(fname: str):
                 # rename column
                 df.rename(columns={'start': 'Date'}, inplace=True)
 
+                # convert to date
+                df['Date'] = pd.to_datetime(df['Date'], format='%Y-%m-%d').dt.date
+
                 # get unique list of user on the calendar
                 users = set(df['Name'].to_list())    
             
@@ -169,9 +172,12 @@ def user_info(fname: str):
                             value=(default_start, default_end),
                             # tuple for date range
                             key='leave_date_range')
-                    
+                        
                     if select_name:
                         df = df[df['Name']==select_name]
+                        
+                        df = df[(df['Date']>=select_range[0]) & (df['Date']<=select_range[-1])]
+                        
                         my_count = df.shape[0]
                         st.markdown(f'#### {select_name} - logs ({my_count})')
                         df = df.reset_index(drop=True)
