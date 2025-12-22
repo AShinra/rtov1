@@ -42,7 +42,7 @@ def user_info(fname: str):
     calendar_events_collection = get_collection('calendar_events')
     calendar_events_document = calendar_events_collection.find_one({'_id': ObjectId(calendar_events_id)})
 
-    col1, col2 = st.columns([2, 6])
+    col1, col2 = st.columns([2, 7])
     with col1:
         gradient_line()
         with st.container():   
@@ -53,9 +53,6 @@ def user_info(fname: str):
             # st.markdown(f"##### 🏠Address: {info_document['address']}")
             # st.markdown(f"##### 📱Mobile: {info_document['mobile_number']}")
             st.markdown(f"#####")
-        
-        # cola, colb = st.columns([1, 2])
-        # with cola:
 
         leave_types = []
 
@@ -83,29 +80,30 @@ def user_info(fname: str):
                 label="Submit Leave Application",
                 key='submit_leave_button',
                 use_container_width='stretch')
-        # with colb:
+
         st.markdown("### Leave Credits")
         gradient_line()
         colb1, colb2, colb3 = st.columns([2, 1, 1])
         with colb1:
-            st.markdown("#### Current")
+            st.markdown("##### Current")
         with colb2:
-            st.markdown("#### Used")
+            st.markdown("##### Used")
         with colb3:
-            st.markdown("#### Balance")
+            st.markdown("##### Balance")
         for leave_type in leave_types:
 
             try:
                 with colb1:
-                    st.markdown(f'##### {leave_type}({leave_credits_document[leave_type]}):')
+                    st.markdown(f'###### {leave_type}({leave_credits_document[leave_type]}):')
                 with colb2:
-                    st.markdown(f'##### {len(leave_data_document[leave_type])}')
+                    st.markdown(f'###### {len(leave_data_document[leave_type])}')
                 with colb3:
-                    st.markdown(f"##### {leave_credits_document[leave_type]-len(leave_data_document[leave_type])}")
+                    st.markdown(f"###### {leave_credits_document[leave_type]-len(leave_data_document[leave_type])}")
             except:
                 pass           
     with col2:
 
+        gradient_line()
         tab1, tab2 = st.tabs(['📅**Calendar**', '🔖**Summary**'])
 
         with tab1:
@@ -180,6 +178,7 @@ def user_info(fname: str):
                         
                         my_count = df.shape[0]
                         st.markdown(f'#### {select_name} - logs ({my_count})')
+                        gradient_line()
                         df = df.reset_index(drop=True)
                         df.insert(0, "No.", df.index + 1)
                         col21, col22 = st.columns([4,1])
@@ -190,8 +189,10 @@ def user_info(fname: str):
                     else:
                         if team=='Management':
                             st.markdown(f'#### Operations Team - logs')
+                            gradient_line()
                         else:
                             st.markdown(f'#### {team} Team - logs')
+                            gradient_line()
                         df = df.reset_index(drop=True)
                         df.insert(0, "No.", df.index + 1)
                         st.dataframe(df, hide_index=True)
