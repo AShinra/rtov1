@@ -1,9 +1,10 @@
 import streamlit as st
 from db import get_collection, get_leave_types
 from bson import ObjectId
-from my_calendar import my_calendar
+from my_calendar import my_calendar, my_events
 from datetime import datetime, time
 from common import gradient_line
+import pandas as pd
 
 
 def user_info(fname: str):
@@ -107,6 +108,39 @@ def user_info(fname: str):
         tab1, tab2 = st.tabs(['📅**Calendar**', '🔖**Summary**'])
         with tab1:
             my_calendar(role_document['team'])
+        with tab2:
+            logs = my_events(role_document['team'])
+            # st.write(logs)
+            df = pd.DataFrame(logs)
+
+            # add new columns
+            df[['Name', 'Leave Type']] = df['title'].str.split('-', expand=True)
+            
+            # remove other columns
+            df.drop(columns=['title', 'backgroundColor'], inplace=True)
+
+            # rename column
+            df.rename(columns={'start': 'Date'}, inplace=True)
+
+            # get unique list of user on the calendar
+            users = set(df['Name'].to_list())
+            
+            # sort alphabetically
+            users = sorted(users)
+
+            
+            # add user list to the selection box
+            select_name = st.selectbox(
+                label='Name',
+                options=users,
+                placeholder='Select Name',
+                index=None,
+                width=250)
+            
+            st.dataframe(df[df['Name']==select_name])
+            
+
+
         
     if st.session_state.get('submit_leave_button'):
         leave_type = st.session_state.leave_type_selectbox
