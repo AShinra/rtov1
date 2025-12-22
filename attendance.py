@@ -106,10 +106,14 @@ def user_info(fname: str):
     with col2:
 
         tab1, tab2 = st.tabs(['📅**Calendar**', '🔖**Summary**'])
+
         with tab1:
             my_calendar(role_document['team'])
         with tab2:
-            st.write(role_document['team'])
+            # get user role
+
+            user_role = role_document['team'].split('-')[-1]
+            st.write(user_role)
 
             logs = my_events(role_document['team'])
             # st.write(logs)
