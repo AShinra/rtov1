@@ -24,9 +24,9 @@ def main(fname: str, rights: str):
 
         digital_clock()
 
-        st.markdown('# Word of GOD')
-        st.markdown(f'### {get_random_bible_verse()}')
-        st.markdown('##    ')
+        # st.markdown('# Word of GOD')
+        # st.markdown(f'### {get_random_bible_verse()}')
+        # st.markdown('##    ')
 
         st.markdown(
             f"""
