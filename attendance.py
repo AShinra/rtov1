@@ -118,9 +118,6 @@ def user_info(fname: str):
             # filter dataframe depending on role
             df = pd.DataFrame(logs)
 
-            if user_role=='Member':
-                df = df[df['title']==fname]
-
             # add new columns
             df[['Name', 'Leave Type']] = df['title'].str.split('-', expand=True)
             
@@ -129,6 +126,9 @@ def user_info(fname: str):
 
             # rename column
             df.rename(columns={'start': 'Date'}, inplace=True)
+
+            if user_role=='Member':
+                df = df[df['Name']==fname]
 
             # get unique list of user on the calendar
             users = set(df['Name'].to_list())    
