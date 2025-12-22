@@ -118,7 +118,7 @@ def user_info(fname: str):
             # filter dataframe depending on role
             df = pd.DataFrame(logs)
 
-            if df!=df.empty:
+            if not df.empty:
 
                 # add new columns
                 df[['Name', 'Leave Type']] = df['title'].str.split('-', expand=True)
