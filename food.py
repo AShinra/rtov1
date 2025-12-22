@@ -44,7 +44,6 @@ def food_for_the_soul():
                     placeholder='Select Chapter',
                     index=None)
                 
-                st.markdown(f'### {book_seletion} {chapter_selection}')
 
                 url = f"https://bible-api.com/data/web/{book_id}/{chapter_selection}"
                 response = requests.get(url)
@@ -53,6 +52,7 @@ def food_for_the_soul():
 
                     col1, col2 = st.columns([1,10])
                     with col2:
+                        st.markdown(f'### {book_seletion} {chapter_selection}')
                         for i in range(len(verses_data['verses'])):
                             st.write(f"[{verses_data['verses'][i]['verse']}] {verses_data['verses'][i]['text']}")
 
