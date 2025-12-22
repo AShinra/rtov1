@@ -169,7 +169,10 @@ def user_info(fname: str):
                         with col22:                
                             st.write(df['Leave Type'].value_counts())
                     else:
-                        st.markdown(f'#### {team} - logs')
+                        if team=='Management':
+                            st.markdown(f'#### Operations Team - logs')
+                        else:
+                            st.markdown(f'#### {team} Team - logs')
                         df = df.reset_index(drop=True)
                         df.insert(0, "No.", df.index + 1)
                         st.dataframe(df, hide_index=True)
