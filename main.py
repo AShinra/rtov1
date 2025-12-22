@@ -4,6 +4,7 @@ from common import gradient_line, get_random_bible_verse
 from attendance import user_info
 from admin_tools import user_management
 from my_clocks import flip_clock, digital_clock
+from food import food_for_the_soul
 
 
 
@@ -11,23 +12,16 @@ def main(fname: str, rights: str):
 
     if rights == 'admin':
         menu_title = 'Admin Dashboard'
-        menu_options = ['Home', 'User Management', 'Leave Management', 'Reports']
-        icons = ['house', 'people-fill', 'check-square', 'bar-chart']
+        menu_options = ['Home', 'User Management', 'Leave Management', 'Reports', 'Food for the Soul']
+        icons = ['house', 'people-fill', 'check-square', 'bar-chart', 'book-half']
     else:
         menu_title = 'User Dashboard'
-        menu_options = ['Home', 'Leave Management', 'Reports']
-        icons = ['house', 'check-square', 'bar-chart']
+        menu_options = ['Home', 'Leave Management', 'Reports', 'Food for the Soul']
+        icons = ['house', 'check-square', 'bar-chart', 'book-half']
 
     with st.sidebar:
 
         digital_clock()
-
-        if 'random_verse' not in st.session_state:
-            st.session_state.random_verse = get_random_bible_verse()
-
-        st.markdown('# Word of GOD')
-        st.markdown(f'### {get_random_bible_verse()}')
-        st.markdown('##    ')
 
         st.markdown(
             f"""
@@ -57,12 +51,15 @@ def main(fname: str, rights: str):
         if st.session_state.reset_button:
             st.rerun()
     
-        
     
     if selected_option == 'Leave Management':
         user_info(fname)
     
     elif selected_option == 'User Management':
         user_management()
+    
+    elif selected_option == 'Food for the Soul':
+        food_for_the_soul()
+
     
     
