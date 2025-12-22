@@ -127,39 +127,39 @@ def user_info(fname: str):
             # rename column
             df.rename(columns={'start': 'Date'}, inplace=True)
 
-            if user_role=='Member':
-                df = df[df['Name']==fname]
-
             # get unique list of user on the calendar
             users = set(df['Name'].to_list())    
         
             # sort alphabetically
             users = sorted(users)
             
-            # add user list to the selection box
-            select_name = st.selectbox(
-                label='Name',
-                options=users,
-                placeholder='Select Name',
-                index=None,
-                width=250)
-            
-            if select_name:
-                df = df[df['Name']==select_name]
-                my_count = df.shape[0]
-                st.markdown(f'#### {select_name} - logs ({my_count})')
-                df = df.reset_index(drop=True)
-                df.insert(0, "No.", df.index + 1)
-                col21, col22 = st.columns([4,1])
-                with col21:
-                    st.dataframe(df, hide_index=True)
-                with col22:                
-                    st.write(df['Leave Type'].value_counts())
+            if user_role=='Member':
+                ''''''
             else:
-                st.markdown(f'#### All - logs')
-                df = df.reset_index(drop=True)
-                df.insert(0, "No.", df.index + 1)
-                st.dataframe(df, hide_index=True)
+                # add user list to the selection box
+                select_name = st.selectbox(
+                    label='Name',
+                    options=users,
+                    placeholder='Select Name',
+                    index=None,
+                    width=250)
+                
+                if select_name:
+                    df = df[df['Name']==select_name]
+                    my_count = df.shape[0]
+                    st.markdown(f'#### {select_name} - logs ({my_count})')
+                    df = df.reset_index(drop=True)
+                    df.insert(0, "No.", df.index + 1)
+                    col21, col22 = st.columns([4,1])
+                    with col21:
+                        st.dataframe(df, hide_index=True)
+                    with col22:                
+                        st.write(df['Leave Type'].value_counts())
+                else:
+                    st.markdown(f'#### All - logs')
+                    df = df.reset_index(drop=True)
+                    df.insert(0, "No.", df.index + 1)
+                    st.dataframe(df, hide_index=True)
 
             
 
