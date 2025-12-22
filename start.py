@@ -1,9 +1,8 @@
 import streamlit as st
 from argon2 import PasswordHasher
 from db import get_collection
-from common import gradient_line, get_logo, get_random_bible_verse
+from common import gradient_line
 from main import main
-# import random
 
 
 if __name__ == '__main__':
