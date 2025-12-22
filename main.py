@@ -24,9 +24,12 @@ def main(fname: str, rights: str):
 
         digital_clock()
 
-        # st.markdown('# Word of GOD')
-        # st.markdown(f'### {get_random_bible_verse()}')
-        # st.markdown('##    ')
+        if 'random_verse' not in st.session_state:
+            st.session_state.random_verse = get_random_bible_verse()
+
+        st.markdown('# Word of GOD')
+        st.markdown(f'### {get_random_bible_verse()}')
+        st.markdown('##    ')
 
         st.markdown(
             f"""
