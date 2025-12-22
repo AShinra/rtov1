@@ -14,15 +14,20 @@ def get_random_bible_verse():
     chapter = random.randint(1, 150)
     verse = random.randint(1, 176)
 
-    url = f"https://bible-api.com/{book}%20{chapter}:{verse}"
+    # url = f"https://bible-api.com/{book}%20{chapter}:{verse}"
+    url = f"https://bible-api.com/data/kjv/random"
     response = requests.get(url)
 
     if response.status_code == 200:
         data = response.json()
-        return f"{data['reference']} — {data['text'].strip()}"
+        book = data['random_verse']['book']
+        chapter = data['random_verse']['chapter']
+        verse = data['random_verse']['verse']
+        text = data['random_verse']['text']
+        return(f'{book} {chapter}:{verse} - {text}')
     else:
         return "Luke 4:10 — for it is written,‘He will put his angels in charge of you, to guard you;’"
     
 
 # Example usage
-# print(get_random_bible_verse())
+print(get_random_bible_verse())

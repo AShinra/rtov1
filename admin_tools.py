@@ -2,6 +2,7 @@ import streamlit as st
 from common import gradient_line
 from db import get_collection
 from argon2 import PasswordHasher
+import pandas as pd
 
 def user_management():
     st.title("User Management")
@@ -9,15 +10,13 @@ def user_management():
     col1, col2 = st.columns([2, 3])
 
     with col1:
+        # Add User
         gradient_line()
 
-        tab1, tab2 = st.tabs(["🔎**View Users**", "✍️**Add User**"])
+        tab1, tab2 = st.tabs(["✍️**Add User**", "🔎**View Users**"])
 
-        with tab1:
-            st.subheader("🔎View Users")
-            gradient_line()
         
-        with tab2:
+        with tab1:
             st.subheader("✍️Add User")
             gradient_line()
 
@@ -77,10 +76,29 @@ def user_management():
                 label="Add User",
                 width='stretch',
                 key='add_user_button')
-    
+            
+
+        with tab2:
+            st.subheader("🔎View Users")
+            gradient_line()
+
+            # get user collection
+            collection = get_collection('users')
+            documents = collection.find({})
+            
+            # create dataframe
+            df = pd.DataFrame(documents)
+
+            # remove other columns
+            df.drop(columns=['_id', 'password_hash', 'user_info', 'leave_credits', 'leave_data', 'user_events', 'role'], inplace=True)
+            
+            st.dataframe(df)
+
+
 
     with col2:
         ''''''
+        
     
     if st.session_state['add_user_button']:
         
