@@ -101,8 +101,9 @@ if __name__ == '__main__':
                     st.session_state.fname = doc['name']
                     st.session_state.department = doc['department']
                     st.session_state.team = doc['team']
-                    st.rerun()
                 except Exception:
                     st.sidebar.error("Wrong password")
+                finally:    
+                    st.rerun()
     
         
