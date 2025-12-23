@@ -26,22 +26,26 @@ def user_management():
                 gradient_line()
                 st.text_input(
                     label="**Username**",
-                    key='add_user_name_input')
+                    key='add_user_name_input',
+                    placeholder='Enter Username')
 
                 st.text_input(
                     label="**Password**",
                     type="password",
-                    key='add_user_password_input')
+                    key='add_user_password_input',
+                    placeholder='Enter Password')
                 
                 st.text_input(
                     label="**Full Name**",
-                    key='add_user_fname_input')
+                    key='add_user_fname_input',
+                    placeholder='Enter Full Name')
                 
                 st.selectbox(
                     label="**Permission**",
                     options=['user', 'admin'],
                     placeholder='Select Permission',
-                    key='add_user_permission_selectbox')
+                    key='add_user_permission_selectbox',
+                    index=None)
             with colb:
                 departments = []
                 roles = []
@@ -64,13 +68,15 @@ def user_management():
                     label="**Department**",
                     options=departments,
                     placeholder='Select Department',
-                    key='add_user_department_selectbox')
+                    key='add_user_department_selectbox',
+                    index=None)
 
                 st.selectbox(
                     label="**Team**",
                     options=roles,
                     placeholder='Select Team',
-                    key='add_user_team_selectbox')
+                    key='add_user_team_selectbox',
+                    index=None)
                 
             st.button(
                 label="Add User",
@@ -91,7 +97,7 @@ def user_management():
 
             # remove other columns
             df.drop(columns=['_id', 'password_hash', 'user_info', 'leave_credits', 'leave_data', 'user_events', 'role'], inplace=True)
-            
+
             st.dataframe(df)
 
 
