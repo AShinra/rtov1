@@ -55,9 +55,10 @@ def food_for_the_soul():
 
                         with col2:
                             st.markdown(f'### {book_seletion} {chapter_selection}')
+                            gradient_line()
                             for i in range(len(verses_data['verses'])):
-                                st.write(f":red[[{verses_data['verses'][i]['verse']}]] {verses_data['verses'][i]['text']}")
-
+                                st.markdown(f"### :red[[{verses_data['verses'][i]['verse']}]]")
+                                st.markdown(f"#### {verses_data['verses'][i]['text']}")
         except:
             pass
 
