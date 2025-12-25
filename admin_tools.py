@@ -131,7 +131,7 @@ def user_management():
                     
                     document = get_collection('leave_credits').find_one(
                         {'_id':ObjectId(user_leave_credits_id)})
-                    
+
                     sick = document['Sick']
                     vacation = document['Vacation']
                     others = document['Others']
@@ -141,7 +141,7 @@ def user_management():
                     maternity = document['Maternity']
                     paternity = document['Paternity']
 
-                    cola, colb = st.columns(2)
+                    cola, colb = st.columns([3,1])
                     with cola:
                         st.markdown('##### Sick :')
                         st.markdown('##### Vacation :')
@@ -160,95 +160,109 @@ def user_management():
                         st.markdown(f'##### {emergency}')
                         st.markdown(f'##### {maternity}')
                         st.markdown(f'##### {paternity}')
-                    
-                    button_adjust = st.button(
-                        label='Adjust',
-                        width='stretch')
                 
                 with col2:
-                    if button_adjust:
-                        st.subheader('Leave Adjustment')
-                        gradient_line()
+                    
+                    st.subheader('Leave Adjustment')
+                    gradient_line()
 
-                        cola, colb = st.columns(2)
-                        with cola:
-                            st.markdown('##### Sick')
-                            sick_data = st.number_input(
-                                label='Sick',
-                                label_visibility='collapsed',
-                                value=sick,
-                                step=1,
-                                max_value=10,
-                                min_value=0)
-                            
-                            st.markdown('##### Vacation')
-                            vacation_data = st.number_input(
-                                label='Vacation',
-                                label_visibility='collapsed',
-                                value=vacation,
-                                step=1,
-                                max_value=10,
-                                min_value=0)
-                            
-                            st.markdown('##### Others')
-                            others_data = st.number_input(
-                                label='Others',
-                                label_visibility='collapsed',
-                                value=others,
-                                step=1,
-                                max_value=30,
-                                min_value=0)
-                            
-                            st.markdown('##### Birthday')
-                            birthday_data = st.number_input(
-                                label='Birthday',
-                                label_visibility='collapsed',
-                                value=birthday,
-                                step=1,
-                                max_value=1,
-                                min_value=0)
-                            
-                        with colb:
-                            st.markdown('##### Bereavement')
-                            bereavement_data = st.number_input(
-                                label='Bereavement',
-                                label_visibility='collapsed',
-                                value=bereavement,
-                                step=1,
-                                max_value=3,
-                                min_value=0)
-                            
-                            st.markdown('##### Emergency')
-                            emergency_data = st.number_input(
-                                label='Emergency',
-                                label_visibility='collapsed',
-                                value=emergency,
-                                step=1,
-                                max_value=2,
-                                min_value=0)
-                            
-                            st.markdown('##### Maternity')
-                            matertiny_data = st.number_input(
-                                label='Maternity',
-                                label_visibility='collapsed',
-                                value=maternity,
-                                step=1,
-                                max_value=60,
-                                min_value=0)
-                            
-                            st.markdown('##### Paternity')
-                            paternity_data = st.number_input(
-                                label='Paternity',
-                                label_visibility='collapsed',
-                                value=paternity,
-                                step=1,
-                                max_value=5,
-                                min_value=0)
+                    cola, colb = st.columns(2)
+                    with cola:
+                        st.markdown('##### Sick')
+                        sick_data = st.number_input(
+                            label='Sick',
+                            label_visibility='collapsed',
+                            value=sick,
+                            step=1,
+                            max_value=10,
+                            min_value=0)
                         
-
+                        st.markdown('##### Vacation')
+                        vacation_data = st.number_input(
+                            label='Vacation',
+                            label_visibility='collapsed',
+                            value=vacation,
+                            step=1,
+                            max_value=10,
+                            min_value=0)
+                        
+                        st.markdown('##### Others')
+                        others_data = st.number_input(
+                            label='Others',
+                            label_visibility='collapsed',
+                            value=others,
+                            step=1,
+                            max_value=30,
+                            min_value=0)
+                        
+                        st.markdown('##### Birthday')
+                        birthday_data = st.number_input(
+                            label='Birthday',
+                            label_visibility='collapsed',
+                            value=birthday,
+                            step=1,
+                            max_value=1,
+                            min_value=0)
+                        
+                    with colb:
+                        st.markdown('##### Bereavement')
+                        bereavement_data = st.number_input(
+                            label='Bereavement',
+                            label_visibility='collapsed',
+                            value=bereavement,
+                            step=1,
+                            max_value=3,
+                            min_value=0)
+                        
+                        st.markdown('##### Emergency')
+                        emergency_data = st.number_input(
+                            label='Emergency',
+                            label_visibility='collapsed',
+                            value=emergency,
+                            step=1,
+                            max_value=2,
+                            min_value=0)
+                        
+                        st.markdown('##### Maternity')
+                        matertiny_data = st.number_input(
+                            label='Maternity',
+                            label_visibility='collapsed',
+                            value=maternity,
+                            step=1,
+                            max_value=60,
+                            min_value=0)
+                        
+                        st.markdown('##### Paternity')
+                        paternity_data = st.number_input(
+                            label='Paternity',
+                            label_visibility='collapsed',
+                            value=paternity,
+                            step=1,
+                            max_value=5,
+                            min_value=0)
+                    
                     submit_adjustments = st.button(
                         label='Submit Adjustments',
                         width='stretch')
+                    
+                    # Submit adjustments in leave credits
+                    if submit_adjustments:
+                        # update leave credit document
+                        leave_credits_collection = get_collection('leave_credits')
+
+                        leave_credits_collection.update_one(
+                            {'_id':ObjectId(user_leave_credits_id)},
+                            {'$set':{
+                                'Sick':sick_data,
+                                'Vacation': vacation_data,
+                                'Others': others_data,
+                                'Birthday': birthday_data,
+                                'Bereavement': bereavement_data,
+                                'Emergency': emergency_data,
+                                'Maternity': matertiny_data,
+                                'Paternity': paternity_data}})
+                        
+                        st.rerun()
             
 
 
@@ -310,17 +324,16 @@ def user_management():
         user_info_id = user_info_doc['_id']
 
         # create leave credit document
-        leave_credits_collection =get_collection('leave_credits')
+        leave_credits_collection = get_collection('leave_credits')
         leave_credits_doc = {
-            'Sick':0,
-            'Vacation':0,
+            'Sick':10,
+            'Vacation':10,
             'Others':0,
-            'Birthday':0,
-            'Bereavement':0,
-            'Emergency':0,
+            'Birthday':1,
+            'Bereavement':3,
+            'Emergency':2,
             'Maternity':0,
-            'Paternity':0
-            }
+            'Paternity':0}
         
         leave_credits_collection.insert_one(leave_credits_doc)
         leave_credits_id = leave_credits_doc['_id']
@@ -344,6 +357,11 @@ def user_management():
         user_collection.insert_one(user_info)
 
         st.toast("User added successfully!")
+    
+
+    
+
+
             
             
                 
