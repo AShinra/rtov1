@@ -21,6 +21,7 @@ def user_info(fname: str):
     info_id = user_document['user_info']
     leave_id = user_document['leave_credits']
     leave_data_id = user_document['leave_data']
+    leave_credits_id = user_document['leave_credits']
     calendar_events_id = user_document['user_events']
 
     # get related documents
@@ -42,6 +43,8 @@ def user_info(fname: str):
     calendar_events_collection = get_collection('calendar_events')
     calendar_events_document = calendar_events_collection.find_one({'_id': ObjectId(calendar_events_id)})
 
+    
+
     col1, col2 = st.columns([2, 7])
     with col1:
         gradient_line()
@@ -56,8 +59,14 @@ def user_info(fname: str):
 
         leave_types = []
 
-        for document in leave_types_documents:
-            leave_types.append(document['name'])
+        # for document in leave_types_documents:
+        #     leave_types.append(document['name'])
+        
+        for data in leave_credits_document:
+            if data!='_id':
+                if leave_credits_document[data]>0:
+                    leave_types.append(data)
+            
         
         leave_types.sort()
 
@@ -94,11 +103,13 @@ def user_info(fname: str):
 
             try:
                 with colb1:
-                    st.markdown(f'###### {leave_type}({leave_credits_document[leave_type]}):')
+                    # st.markdown(f'###### {leave_type}({leave_credits_document[leave_type]}):')
+                    st.markdown(f'###### {leave_type}')
                 with colb2:
                     st.markdown(f'###### {len(leave_data_document[leave_type])}')
                 with colb3:
-                    st.markdown(f"###### {leave_credits_document[leave_type]-len(leave_data_document[leave_type])}")
+                    # st.markdown(f"###### {leave_credits_document[leave_type]-len(leave_data_document[leave_type])}")
+                    st.markdown(f"###### {leave_credits_document[leave_type]}")
             except:
                 pass           
     with col2:
@@ -230,6 +241,10 @@ def user_info(fname: str):
                 "backgroundColor": leave_color,
                 "textColor": leave_font_color
             }}})
+        leave_credits_collection.update_one(
+            {"_id": ObjectId(leave_credits_id)},
+            {"$inc":{leave_type:-1}}
+        )
         st.toast("Leave application submitted!")
         st.rerun()
 
