@@ -2,10 +2,10 @@ import streamlit as st
 from db import get_collection, get_leave_types
 from bson import ObjectId
 from my_calendar import my_calendar, my_events
-from datetime import datetime, time
-from common import gradient_line
+from datetime import datetime, time, date
+from common import gradient_line, get_user_document_ids
 import pandas as pd
-from datetime import date
+
 
 
 def user_info(fname: str, rights: str):
@@ -17,12 +17,7 @@ def user_info(fname: str, rights: str):
     user_document = user_collection.find_one({'name': fname})
 
     # get related document ids
-    role_id = user_document['role']
-    info_id = user_document['user_info']
-    leave_id = user_document['leave_credits']
-    leave_data_id = user_document['leave_data']
-    leave_credits_id = user_document['leave_credits']
-    calendar_events_id = user_document['user_events']
+    role_id, info_id, leave_id, leave_data_id, leave_credits_id, calendar_events_id = get_user_document_ids(user_document)    
 
     # get related documents
     role_collection = get_collection('user_role')
@@ -43,9 +38,7 @@ def user_info(fname: str, rights: str):
     calendar_events_collection = get_collection('calendar_events')
     calendar_events_document = calendar_events_collection.find_one({'_id': ObjectId(calendar_events_id)})
 
-    
-
-    col1, col2 = st.columns([2, 7])
+    col1, col2, col3 = st.columns([3, 5, 4])
     with col1:
         gradient_line()
         with st.container():   
@@ -113,195 +106,102 @@ def user_info(fname: str, rights: str):
             except:
                 pass           
     with col2:
-
+        st.markdown("### Leave Logs")
         gradient_line()
-        if rights == 'admin':
-            tab1, tab2, tab3 = st.tabs(['📅**Calendar**', '🔖**Summary**', '📌**Add Events**'])
-        else:
-            tab1, tab2 = st.tabs(['📅**Calendar**', '🔖**Summary**'])
+        # get user role
+        user_role = role_document['team'].split('-')[-1]
+        team = role_document['team'].split('-')[0]
 
-        with tab1:
-            my_calendar(role_document['team'])
-        with tab2:
-            # get user role
-            user_role = role_document['team'].split('-')[-1]
-            team = role_document['team'].split('-')[0]
+        logs = my_events(role_document['team'])
+        
+        # filter dataframe depending on role
+        df = pd.DataFrame(logs)
+        
+        if not df.empty:
 
-            logs = my_events(role_document['team'])
+            # add new columns
+            df[['Name', 'Leave Type']] = df['title'].str.split('-', expand=True)
             
-            # filter dataframe depending on role
-            df = pd.DataFrame(logs)
+            # remove other columns
+            df.drop(columns=['title', 'backgroundColor', 'textColor'], inplace=True)
+
+            # rename column
+            df.rename(columns={'start': 'Date'}, inplace=True)
+
+            # convert to date
+            df['Date'] = pd.to_datetime(df['Date'], format='%Y-%m-%d').dt.date
+
+            # get unique list of user on the calendar
+            users = set(df['Name'].to_list())    
+        
+            # sort alphabetically
+            users = sorted(users)
             
-            if not df.empty:
+            if user_role=='Member':
+                df = df[df['Name']==fname]
+                my_count = df.shape[0]
+                st.markdown(f'#### {fname} - logs ({my_count})')
+                df = df.reset_index(drop=True)
+                df.insert(0, "No.", df.index + 1)
+                col21, col22 = st.columns([4,1])
+                with col21:
+                    st.dataframe(df, hide_index=True)
+                with col22:                
+                    st.write(df['Leave Type'].value_counts())
 
-                # add new columns
-                df[['Name', 'Leave Type']] = df['title'].str.split('-', expand=True)
-                
-                # remove other columns
-                df.drop(columns=['title', 'backgroundColor', 'textColor'], inplace=True)
+            else:
+                cola, colb, colc, cold = st.columns(4)
+                with cola:
+                    # add user list to the selection box
+                    select_name = st.selectbox(
+                        label='Name',
+                        options=users,
+                        placeholder='Select Name',
+                        index=None,
+                        width='stretch')
+                with colb:
+                    # Default date range (optional)
+                    default_start = date.today()
+                    default_end = date.today()
 
-                # rename column
-                df.rename(columns={'start': 'Date'}, inplace=True)
+                    select_range=st.date_input(
+                        label="Select Leave Date Range",
+                        value=(default_start, default_end),
+                        # tuple for date range
+                        key='leave_date_range')
 
-                # convert to date
-                df['Date'] = pd.to_datetime(df['Date'], format='%Y-%m-%d').dt.date
-
-                # get unique list of user on the calendar
-                users = set(df['Name'].to_list())    
-            
-                # sort alphabetically
-                users = sorted(users)
-                
-                if user_role=='Member':
-                    df = df[df['Name']==fname]
+                if select_name:
+                    df = df[df['Name']==select_name]
+                    
+                    df = df[(df['Date']>=select_range[0]) & (df['Date']<=select_range[-1])]
+                    
                     my_count = df.shape[0]
-                    st.markdown(f'#### {fname} - logs ({my_count})')
+                    st.markdown(f'#### {select_name} - logs ({my_count})')
+                    gradient_line()
                     df = df.reset_index(drop=True)
                     df.insert(0, "No.", df.index + 1)
                     col21, col22 = st.columns([4,1])
                     with col21:
-                        st.dataframe(df, hide_index=True)
+                        st.dataframe(
+                            df,
+                            hide_index=True)
                     with col22:                
-                        st.write(df['Leave Type'].value_counts())
-
+                        st.dataframe(df['Leave Type'].value_counts())
                 else:
-                    cola, colb, colc, cold = st.columns(4)
-                    with cola:
-                        # add user list to the selection box
-                        select_name = st.selectbox(
-                            label='Name',
-                            options=users,
-                            placeholder='Select Name',
-                            index=None,
-                            width='stretch')
-                    with colb:
-                        # Default date range (optional)
-                        default_start = date.today()
-                        default_end = date.today()
-
-                        select_range=st.date_input(
-                            label="Select Leave Date Range",
-                            value=(default_start, default_end),
-                            # tuple for date range
-                            key='leave_date_range')
-
-                    if select_name:
-                        df = df[df['Name']==select_name]
-                        
-                        df = df[(df['Date']>=select_range[0]) & (df['Date']<=select_range[-1])]
-                        
-                        my_count = df.shape[0]
-                        st.markdown(f'#### {select_name} - logs ({my_count})')
+                    if team=='Management':
+                        st.markdown(f'#### Operations Team - logs')
                         gradient_line()
-                        df = df.reset_index(drop=True)
-                        df.insert(0, "No.", df.index + 1)
-                        col21, col22 = st.columns([4,1])
-                        with col21:
-                            st.dataframe(
-                                df,
-                                hide_index=True)
-                        with col22:                
-                            st.dataframe(df['Leave Type'].value_counts())
                     else:
-                        if team=='Management':
-                            st.markdown(f'#### Operations Team - logs')
-                            gradient_line()
-                        else:
-                            st.markdown(f'#### {team} Team - logs')
-                            gradient_line()
-                        df = df.reset_index(drop=True)
-                        df.insert(0, "No.", df.index + 1)
-                        st.dataframe(df, hide_index=True)
-            
-            else:
-                st.markdown('### No Logs to Display')
+                        st.markdown(f'#### {team} Team - logs')
+                        gradient_line()
+                    df = df.reset_index(drop=True)
+                    df.insert(0, "No.", df.index + 1)
+                    st.dataframe(df, hide_index=True)
+        
+        else:
+            st.markdown('### No Logs to Display')
 
-        if rights == 'admin':
-            with tab3:
-                st.markdown("### Company Holidays")
-                gradient_line()
-                st.markdown("""
-                - **New Year's Day** - January 1
-                - **Independence Day** - June 12
-                - **All Saints Day** - November 1
-                - **Rizal Day** - December 30
-                - **Christmas Day** - December 25
-                """)
-
-                col1, col2 = st.columns([2, 7])
-                with col1:
-                    st.markdown("#### Add Event")
-                    gradient_line()
-                    event_date = st.date_input(
-                        label="Select Event Date",
-                        key='event_date_input')
-                    event_title = st.text_input(
-                        label="Event Title",
-                        key='event_title_input')
-                    st.button(
-                        label="Add Event",
-                        key='add_event_button',
-                        use_container_width='stretch')
-                with col2:
-                    st.markdown("#### Events/Holidays Summary")
-                    gradient_line()
-                    company_events_doc = calendar_events_collection.find_one({'team': 'Company'})
-                    company_events = company_events_doc['events']
-                    df_events = pd.DataFrame(company_events)
-                    if not df_events.empty:
-                        df_events.drop(columns=['backgroundColor', 'textColor'], inplace=True)
-                        df_events.rename(columns={'start': 'Date', 'title': 'Event/Holiday'}, inplace=True)
-                        st.dataframe(df_events, hide_index=True)
-
-                    else:
-                        st.markdown("### No Events to Display")
-
-                    # company_events = company_events_doc['events']
-                    # df_events = pd.DataFrame(company_events)
-                    # if not df_events.empty:
-                    #     df_events = df_events.reset_index(drop=True)
-                    #     df_events.insert(0, "No.", df_events.index + 1)
-                    #     st.dataframe(df_events, hide_index=True)
-                    # else:
-                    #     st.markdown("### No Events to Display")
-                    
-                if st.session_state.get('add_event_button'):
-                    event_input = datetime.combine(st.session_state.event_date_input, time.min)
-                    event_date_str = event_input.strftime("%Y-%m-%d")
-                    event_title_str = st.session_state.event_title_input
-
-                    # get company calendar events document
-                    company_calendar_events_document = calendar_events_collection.find_one({'team': 'Company'})
-
-                    result = calendar_events_collection.update_one(
-                        {"team": "Company",
-                         "events": {
-                             "$not": {
-                                 "$elemMatch": {"title": event_title_str,
-                                                "start": event_date_str,
-                                                "backgroundColor": "red",
-                                                "textColor": "white"}}}},
-                                                {"$push": {"events": {
-                                                    "title": event_title_str,
-                                                    "start": event_date_str,
-                                                    "backgroundColor": "red",
-                                                    "textColor": "white"}}})
-                    
-                    if result.modified_count == 1:
-                        st.rerun()
-                        st.toast("✅ Event added to calendar!")
-                    else:
-                        st.toast("⚠️ Event already exists")
-
-                    # calendar_events_collection.update_one(
-                    #     {"team": "Company"},
-                    #     {"$push": {"events": {
-                    #         "title": f'{event_title_str}',
-                    #         "start": event_date_str,
-                    #         "backgroundColor": "red",
-                    #         "textColor": "white"
-                    #     }}})
-                
+        
             
 
 

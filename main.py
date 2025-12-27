@@ -5,6 +5,7 @@ from attendance import user_info
 from admin_tools import user_management
 from my_clocks import flip_clock, digital_clock
 from food import food_for_the_soul
+from my_calendar import team_calendar
 
 
 
@@ -12,13 +13,12 @@ def main(fname: str, rights: str):
 
     if rights == 'admin':
         menu_title = 'Admin Dashboard'
-        menu_options = ['Home', 'User Management', 'Leave Management', 'Reports', 'Food for the Soul']
-        icons = ['house', 'people-fill', 'check-square', 'bar-chart', 'book-half']
+        menu_options = ['Home', 'User Management', 'Leave Management', 'Team Calendar', 'Reports', 'Food for the Soul']
+        icons = ['house', 'people-fill', 'check-square', 'calendar3', 'bar-chart', 'book-half']
     else:
         menu_title = 'User Dashboard'
-        menu_options = ['Home', 'Leave Management', 'Reports', 'Food for the Soul']
-        icons = ['house', 'check-square', 'bar-chart', 'book-half']
-
+        menu_options = ['Home', 'Leave Management', 'Team Calendar', 'Reports', 'Food for the Soul']
+        icons = ['house', 'check-square', 'calendar3', 'bar-chart', 'book-half']
     with st.sidebar:
 
         digital_clock()
@@ -62,5 +62,8 @@ def main(fname: str, rights: str):
     
     elif selected_option == 'Food for the Soul':
         food_for_the_soul()
+    
+    elif selected_option == 'Team Calendar':
+        team_calendar(rights=rights, fname=fname)
     
     
