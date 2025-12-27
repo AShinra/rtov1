@@ -6,6 +6,3 @@ def gradient_line():
 def get_logo():
     # Return a path or bytes object for the logo image if you have one.
     return None
-
-
-

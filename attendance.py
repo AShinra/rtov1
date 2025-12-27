@@ -8,7 +8,7 @@ import pandas as pd
 from datetime import date
 
 
-def user_info(fname: str):
+def user_info(fname: str, rights: str):
     st.title("Leave Management")
     
     # get user collection data
@@ -115,7 +115,10 @@ def user_info(fname: str):
     with col2:
 
         gradient_line()
-        tab1, tab2 = st.tabs(['📅**Calendar**', '🔖**Summary**'])
+        if rights == 'admin':
+            tab1, tab2, tab3 = st.tabs(['📅**Calendar**', '🔖**Summary**', '📌**Add Events**'])
+        else:
+            tab1, tab2 = st.tabs(['📅**Calendar**', '🔖**Summary**'])
 
         with tab1:
             my_calendar(role_document['team'])
@@ -128,7 +131,7 @@ def user_info(fname: str):
             
             # filter dataframe depending on role
             df = pd.DataFrame(logs)
-
+            
             if not df.empty:
 
                 # add new columns
@@ -213,6 +216,92 @@ def user_info(fname: str):
             else:
                 st.markdown('### No Logs to Display')
 
+        if rights == 'admin':
+            with tab3:
+                st.markdown("### Company Holidays")
+                gradient_line()
+                st.markdown("""
+                - **New Year's Day** - January 1
+                - **Independence Day** - June 12
+                - **All Saints Day** - November 1
+                - **Rizal Day** - December 30
+                - **Christmas Day** - December 25
+                """)
+
+                col1, col2 = st.columns([2, 7])
+                with col1:
+                    st.markdown("#### Add Event")
+                    gradient_line()
+                    event_date = st.date_input(
+                        label="Select Event Date",
+                        key='event_date_input')
+                    event_title = st.text_input(
+                        label="Event Title",
+                        key='event_title_input')
+                    st.button(
+                        label="Add Event",
+                        key='add_event_button',
+                        use_container_width='stretch')
+                with col2:
+                    st.markdown("#### Events/Holidays Summary")
+                    gradient_line()
+                    company_events_doc = calendar_events_collection.find_one({'team': 'Company'})
+                    company_events = company_events_doc['events']
+                    df_events = pd.DataFrame(company_events)
+                    if not df_events.empty:
+                        df_events.drop(columns=['backgroundColor', 'textColor'], inplace=True)
+                        df_events.rename(columns={'start': 'Date', 'title': 'Event/Holiday'}, inplace=True)
+                        st.dataframe(df_events, hide_index=True)
+
+                    else:
+                        st.markdown("### No Events to Display")
+
+                    # company_events = company_events_doc['events']
+                    # df_events = pd.DataFrame(company_events)
+                    # if not df_events.empty:
+                    #     df_events = df_events.reset_index(drop=True)
+                    #     df_events.insert(0, "No.", df_events.index + 1)
+                    #     st.dataframe(df_events, hide_index=True)
+                    # else:
+                    #     st.markdown("### No Events to Display")
+                    
+                if st.session_state.get('add_event_button'):
+                    event_input = datetime.combine(st.session_state.event_date_input, time.min)
+                    event_date_str = event_input.strftime("%Y-%m-%d")
+                    event_title_str = st.session_state.event_title_input
+
+                    # get company calendar events document
+                    company_calendar_events_document = calendar_events_collection.find_one({'team': 'Company'})
+
+                    result = calendar_events_collection.update_one(
+                        {"team": "Company",
+                         "events": {
+                             "$not": {
+                                 "$elemMatch": {"title": event_title_str,
+                                                "start": event_date_str,
+                                                "backgroundColor": "red",
+                                                "textColor": "white"}}}},
+                                                {"$push": {"events": {
+                                                    "title": event_title_str,
+                                                    "start": event_date_str,
+                                                    "backgroundColor": "red",
+                                                    "textColor": "white"}}})
+                    
+                    if result.modified_count == 1:
+                        st.rerun()
+                        st.toast("✅ Event added to calendar!")
+                    else:
+                        st.toast("⚠️ Event already exists")
+
+                    # calendar_events_collection.update_one(
+                    #     {"team": "Company"},
+                    #     {"$push": {"events": {
+                    #         "title": f'{event_title_str}',
+                    #         "start": event_date_str,
+                    #         "backgroundColor": "red",
+                    #         "textColor": "white"
+                    #     }}})
+                
             
 
 
@@ -245,8 +334,8 @@ def user_info(fname: str):
             {"_id": ObjectId(leave_credits_id)},
             {"$inc":{leave_type:-1}}
         )
-        st.toast("Leave application submitted!")
         st.rerun()
+        st.toast("Leave application submitted!")
 
 
     

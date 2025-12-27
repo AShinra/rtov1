@@ -12,8 +12,8 @@ def main(fname: str, rights: str):
 
     if rights == 'admin':
         menu_title = 'Admin Dashboard'
-        menu_options = ['Home', 'User Management', 'Leave Management', 'Reports', 'Food for the Soul']
-        icons = ['house', 'people-fill', 'check-square', 'bar-chart', 'book-half']
+        menu_options = ['Home', 'User Management', 'Leave Management', 'Events', 'Reports', 'Food for the Soul']
+        icons = ['house', 'people-fill', 'check-square', 'calendar2-event', 'bar-chart', 'book-half']
     else:
         menu_title = 'User Dashboard'
         menu_options = ['Home', 'Leave Management', 'Reports', 'Food for the Soul']
@@ -53,13 +53,12 @@ def main(fname: str, rights: str):
     
     
     if selected_option == 'Leave Management':
-        user_info(fname)
+        user_info(fname, rights)
     
     elif selected_option == 'User Management':
         user_management()
     
     elif selected_option == 'Food for the Soul':
         food_for_the_soul()
-
     
     
