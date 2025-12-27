@@ -12,8 +12,8 @@ def main(fname: str, rights: str):
 
     if rights == 'admin':
         menu_title = 'Admin Dashboard'
-        menu_options = ['Home', 'User Management', 'Leave Management', 'Events', 'Reports', 'Food for the Soul']
-        icons = ['house', 'people-fill', 'check-square', 'calendar2-event', 'bar-chart', 'book-half']
+        menu_options = ['Home', 'User Management', 'Leave Management', 'Reports', 'Food for the Soul']
+        icons = ['house', 'people-fill', 'check-square', 'bar-chart', 'book-half']
     else:
         menu_title = 'User Dashboard'
         menu_options = ['Home', 'Leave Management', 'Reports', 'Food for the Soul']
