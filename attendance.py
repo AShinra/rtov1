@@ -202,10 +202,6 @@ def user_info(fname: str, rights: str):
             st.markdown('### No Logs to Display')
 
         
-            
-
-
-        
     if st.session_state.get('submit_leave_button'):
         leave_type = st.session_state.leave_type_selectbox
         leave_input = datetime.combine(st.session_state.leave_date_input, time.min)
@@ -235,7 +231,7 @@ def user_info(fname: str, rights: str):
             {"$inc":{leave_type:-1}}
         )
         st.rerun()
-        st.toast("Leave application submitted!")
+        st.toast("Leave application submitted!", icon="✅")
 
 
     
