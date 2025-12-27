@@ -90,19 +90,17 @@ if __name__ == '__main__':
         if submit_btn:
             doc = user_collection.find_one({"username": username})
             if not doc:
-                st.sidebar.error("No such user")
+                st.toast("No such user", icon="❌")
             else:
                 try:
                     ph.verify(doc["password_hash"], password)
+                except Exception:
+                    st.toast("Wrong password", icon="❌")
+                else:
                     st.session_state.logged_in = True
                     st.session_state.username = username
                     st.session_state.rights = doc['rights']
                     st.session_state.fname = doc['name']
-                    st.session_state.department = doc['department']
-                    st.session_state.team = doc['team']
-                except Exception:
-                    st.sidebar.error("Wrong password")
-                finally:    
                     st.rerun()
     
         
