@@ -84,7 +84,8 @@ if __name__ == '__main__':
             submit_btn = st.button(
                 label='**LOGIN**',
                 use_container_width=True,
-                key='login_submit_btn')            
+                key='login_submit_btn')
+            st.write('Proverbs 10:9: "Whoever walks in integrity walks securely, but whoever takes crooked paths will be found out".')            
             
 
         if submit_btn:

@@ -46,7 +46,9 @@ def main(fname: str, rights: str):
                 "nav-link-selected": {"background-color": "#444"},
             })
         
-    
+
+        st.write('Proverbs 10:9: "Whoever walks in integrity walks securely, but whoever takes crooked paths will be found out".')
+
         st.button(label='Reset', key='reset_button', use_container_width=True)
         if st.session_state.reset_button:
             st.rerun()
