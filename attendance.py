@@ -113,9 +113,12 @@ def user_info(fname: str, rights: str):
             gradient_line()
 
             # get user leave data documents
+            st.write(team_role)
             if team_role != 'Member':
-                user_leave_data_documents = user_leave_data_collection.find({'team': team})
-                # get users in the team
+                if team_role == 'Operations Manager':
+                    user_leave_data_documents = user_leave_data_collection.find({})
+                else:
+                    user_leave_data_documents = user_leave_data_collection.find({'team': team})
                 df_users_team = pd.DataFrame(user_leave_data_documents)
                 if not df_users_team.empty:
                     team_users = df_users_team['user'].unique().tolist()
