@@ -48,21 +48,10 @@ def user_management():
                     key='add_user_permission_selectbox',
                     index=None)
             with colb:
-                departments = []
-                roles = []
-                role_collection = get_collection('user_role')
-
-                # get unique departments and teams
-                for department_doc in role_collection.find({}, {'_id': 0, 'department': 1}):
-                    departments.append(department_doc['department'])
-
-                departments = list(set(departments))
-
-                for role_doc in role_collection.find({}, {'_id': 0, 'team': 1}):
-                    roles.append(role_doc['team'])
-
-                roles = list(set(roles))
-
+                departments = ['Operations']
+                teams = ['Broadcast', 'Online', 'Print', 'Provincial']
+                roles = ['Lead', 'Lead-Assistant', 'Member']
+                
                 st.subheader("Role Info")
                 gradient_line()
                 st.selectbox(
@@ -74,9 +63,16 @@ def user_management():
 
                 st.selectbox(
                     label="**Team**",
-                    options=roles,
+                    options=teams,
                     placeholder='Select Team',
                     key='add_user_team_selectbox',
+                    index=None)
+                
+                st.selectbox(
+                    label="**Team-Role**",
+                    options=roles,
+                    placeholder='Select Team-Role',
+                    key='add_user_role_selectbox',
                     index=None)
                 
             st.button(
@@ -273,56 +269,9 @@ def user_management():
     
     if st.session_state['add_user_button']:
         
-        # get role id
-        role_collection = get_collection('user_role')
-        doc = role_collection.find_one(
-            {
-                'department': st.session_state.get('add_user_department_selectbox'),
-                'team': st.session_state.get('add_user_team_selectbox')
-            },
-            {'_id': 1})
+        # get user leave data collection
+        collection = get_collection('user_leave_data')
         
-        role_id = doc['_id']
-
-        # create leave_data document
-        leave_data_collection = get_collection('leave_data')
-        leave_data_doc = {
-            'Vacation': [],
-            'Others': [],
-            'Sick': [],
-            'Birthday': [],
-            'Bereavement': [],
-            'Emergency': [],
-            'Maternity': [],
-            'Paternity': [],
-        }
-
-        leave_data_collection.insert_one(leave_data_doc)
-        leave_data_id = leave_data_doc['_id']
-
-        # create a user event id
-        user_events_collection = get_collection('calendar_events')
-        _team = st.session_state['add_user_team_selectbox']
-        _team = _team.split('-')[0]  # extract team name if team-lead format
-
-        doc = user_events_collection.find_one(
-            {
-                'team': _team
-            },
-            {'_id': 1})
-        
-        user_events_id = doc['_id']
-
-        # create a user info document
-        user_info_collection = get_collection('users_info')
-        user_info_doc = {
-            'address':'No Address given - Please update',
-            'mobile_number':'No Phone Number given - Please update'
-        }
-
-        user_info_collection.insert_one(user_info_doc)
-        user_info_id = user_info_doc['_id']
-
         # create leave credit document
         leave_credits_collection = get_collection('leave_credits')
         leave_credits_doc = {
@@ -347,12 +296,14 @@ def user_management():
             'name': st.session_state.get('add_user_fname_input'),
             'password_hash': hashed_password,
             'rights': st.session_state.get('add_user_permission_selectbox'),
-            'role': role_id,
-            'leave_data': leave_data_id,
-            'user_events': user_events_id,
-            'user_info': user_info_id,
-            'leave_credits': leave_credits_id
-        }
+            'leave_credits': leave_credits_id,
+            'department': st.session_state.get('add_user_department_selectbox'),
+            'team': st.session_state.get('add_user_team_selectbox'),
+            'team-role': st.session_state.get('add_user_role_selectbox'),
+            'address': '',
+            'mobile_number': '',
+            'birthdate': ''}
+        
         user_collection = get_collection('users')
         user_collection.insert_one(user_info)
 

@@ -6,6 +6,7 @@ from admin_tools import user_management
 from my_clocks import flip_clock, digital_clock
 from food import food_for_the_soul
 from my_calendar import team_calendar
+from reports import generate_report
 
 
 
@@ -65,5 +66,8 @@ def main(fname: str, rights: str):
     
     elif selected_option == 'Team Calendar':
         team_calendar(rights=rights, fname=fname)
+    
+    elif selected_option == 'Reports':
+        generate_report()
     
     

@@ -12,18 +12,17 @@ def my_calendar(team: str):
     # create empty events list
     events = my_events(team)
 
-    # recurring holidays
-    # Jan 1 - New Year's Day, Dec 25 - Christmas Day, Dec 30 - Rizal Day, Jun 12 - Independence Day
-    events.append({"title": "New Year's Day","rrule": {"freq": "yearly","bymonth": 1,"bymonthday": 1},"backgroundColor": "red"})
-    events.append({"title": "Christmas Day","rrule": {"freq": "yearly","bymonth": 12,"bymonthday": 25},"backgroundColor": "red"})
-    events.append({"title": "All Saints Day","rrule": {"freq": "yearly","bymonth": 11,"bymonthday": 1},"backgroundColor": "red"})
-    events.append({"title": "Rizal Day","rrule": {"freq": "yearly","bymonth": 12,"bymonthday": 30},"backgroundColor": "red"})
-    events.append({"title": "Independence Day","rrule": {"freq": "yearly","bymonth": 6,"bymonthday": 12},"backgroundColor": "red"})
+    # recurring holidays (Jan 1 - New Year's Day, Dec 25 - Christmas Day, Dec 30 - Rizal Day, Jun 12 - Independence Day)
+    events.append({"title": "New Year's Day","rrule": {"freq": "yearly","bymonth": 1,"bymonthday": 1},"backgroundColor": "red", "event_type": "Holiday"})
+    events.append({"title": "Christmas Day","rrule": {"freq": "yearly","bymonth": 12,"bymonthday": 25},"backgroundColor": "red", "event_type": "Holiday"})
+    events.append({"title": "All Saints Day","rrule": {"freq": "yearly","bymonth": 11,"bymonthday": 1},"backgroundColor": "red", "event_type": "Holiday"})
+    events.append({"title": "Rizal Day","rrule": {"freq": "yearly","bymonth": 12,"bymonthday": 30},"backgroundColor": "red", "event_type": "Holiday"})
+    events.append({"title": "Independence Day","rrule": {"freq": "yearly","bymonth": 6,"bymonthday": 12},"backgroundColor": "red", "event_type":"Holiday"})
 
-    get_collection('calendar_events')
-    company_doc = get_collection('calendar_events').find_one({'team': 'Company'})
-    for doc in company_doc['events']:
-        events.append(doc)
+    # get_collection('calendar_events')
+    # company_doc = get_collection('calendar_events').find_one({'team': 'Company'})
+    # for doc in company_doc['events']:
+    #     events.append(doc)
 
     # sample formatted events
     # events = [
@@ -34,6 +33,8 @@ def my_calendar(team: str):
 
     options = {
         "initialView": "dayGridMonth",
+        'eventClick': True,
+        'dateClick': False,
         "headerToolbar": {
             "left": "prev,next today",
             "center": "title",
@@ -44,27 +45,27 @@ def my_calendar(team: str):
     calendar(events=events, options=options)
 
 
+
 def my_events(team: str):
 
     # create empty events list
     events = []
 
-    # extract team name if team-lead format
-    team = team.split('-')[0]
-
-    if team=='Management':
-        calendar_events_collection = get_collection('calendar_events')
-        # documents = calendar_events_collection.find({}, {'_id': 0, 'events': 1})
-        documents = calendar_events_collection.find({"team":{"$ne":"Company"}})
-        for doc in documents:
-            events.extend(doc['events'])
-    else:
-        # get user events from db and render calendar
-        calendar_events_collection = get_collection('calendar_events')
-        documents = calendar_events_collection.find({'team': team})
-        for doc in documents:
-            events.extend(doc['events'])
+    calendar_data_collection = get_collection('calendar_data')
     
+    if team == 'Management':
+        documents = calendar_data_collection.find({})
+    else:
+        documents = calendar_data_collection.find({
+            "team": team})
+        
+    for doc in documents:
+        events.append({
+                "title": doc['title'],
+                "start": doc['start'],
+                "backgroundColor": doc['backgroundColor'],
+                "textColor": doc['textColor']})
+
     return events
 
 def team_calendar(rights: str, fname: str):
@@ -72,6 +73,11 @@ def team_calendar(rights: str, fname: str):
     # get user collection data
     user_collection = get_collection('users')
     user_document = user_collection.find_one({'name': fname})
+
+    # get team and team_role
+    team = user_document['team']
+    team_role = user_document['team_role']
+
     calendar_events_collection = get_collection('calendar_events')
 
     # get related document ids
@@ -81,7 +87,7 @@ def team_calendar(rights: str, fname: str):
     role_collection = get_collection('user_role')
     role_document = role_collection.find_one({'_id': ObjectId(role_id)})
 
-    my_team = role_document['team'].split('-')[0]
+    my_team = team
     if my_team == 'Management':
         my_team = 'Operations'
 
@@ -94,7 +100,8 @@ def team_calendar(rights: str, fname: str):
         tab1, = st.tabs(['📅**Calendar**'])
 
     with tab1:
-        my_calendar(role_document['team'])
+        st.write(team)
+        my_calendar(team)
     
     if rights == 'admin':
         with tab2:
