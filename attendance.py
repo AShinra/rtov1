@@ -256,7 +256,9 @@ def user_info(fname: str, rights: str):
                                 index=None)
                         with col2:
                             # Default date range (optional)
-                            default_start = date.today()
+                            current_month = date.today().month
+                            default_start = date(date.today().year, current_month, 1)
+                            # default_start = date.today()
                             default_end = date.today()
 
                             select_range=st.date_input(
