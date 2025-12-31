@@ -17,68 +17,68 @@ def user_management():
         tab1, tab2, tab3 = st.tabs(["✍️**Add User**", "🔎**View Users**", "🪪Leave Credits"])
 
         
-        with tab1:
-            st.subheader("✍️Add User")
-            gradient_line()
+        # with tab1:
+        #     st.subheader("✍️Add User")
+        #     gradient_line()
 
-            cola, colb = st.columns(2, border=True)
-            with cola:
-                st.subheader("User Info")
-                gradient_line()
-                st.text_input(
-                    label="**Username**",
-                    key='add_user_name_input',
-                    placeholder='Enter Username')
+        #     cola, colb = st.columns(2, border=True)
+        #     with cola:
+        #         st.subheader("User Info")
+        #         gradient_line()
+        #         st.text_input(
+        #             label="**Username**",
+        #             key='add_user_name_input',
+        #             placeholder='Enter Username')
 
-                st.text_input(
-                    label="**Password**",
-                    type="password",
-                    key='add_user_password_input',
-                    placeholder='Enter Password')
+        #         st.text_input(
+        #             label="**Password**",
+        #             type="password",
+        #             key='add_user_password_input',
+        #             placeholder='Enter Password')
                 
-                st.text_input(
-                    label="**Full Name**",
-                    key='add_user_fname_input',
-                    placeholder='Enter Full Name')
+        #         st.text_input(
+        #             label="**Full Name**",
+        #             key='add_user_fname_input',
+        #             placeholder='Enter Full Name')
                 
-                st.selectbox(
-                    label="**Permission**",
-                    options=['user', 'admin'],
-                    placeholder='Select Permission',
-                    key='add_user_permission_selectbox',
-                    index=None)
-            with colb:
-                departments = ['Operations']
-                teams = ['Broadcast', 'Online', 'Print', 'Provincial']
-                roles = ['Lead', 'Lead-Assistant', 'Member']
+        #         st.selectbox(
+        #             label="**Permission**",
+        #             options=['user', 'admin'],
+        #             placeholder='Select Permission',
+        #             key='add_user_permission_selectbox',
+        #             index=None)
+        #     with colb:
+        #         departments = ['Operations']
+        #         teams = ['Broadcast', 'Online', 'Print', 'Provincial']
+        #         roles = ['Lead', 'Lead-Assistant', 'Member']
                 
-                st.subheader("Role Info")
-                gradient_line()
-                st.selectbox(
-                    label="**Department**",
-                    options=departments,
-                    placeholder='Select Department',
-                    key='add_user_department_selectbox',
-                    index=None)
+        #         st.subheader("Role Info")
+        #         gradient_line()
+        #         st.selectbox(
+        #             label="**Department**",
+        #             options=departments,
+        #             placeholder='Select Department',
+        #             key='add_user_department_selectbox',
+        #             index=None)
 
-                st.selectbox(
-                    label="**Team**",
-                    options=teams,
-                    placeholder='Select Team',
-                    key='add_user_team_selectbox',
-                    index=None)
+        #         st.selectbox(
+        #             label="**Team**",
+        #             options=teams,
+        #             placeholder='Select Team',
+        #             key='add_user_team_selectbox',
+        #             index=None)
                 
-                st.selectbox(
-                    label="**Team-Role**",
-                    options=roles,
-                    placeholder='Select Team-Role',
-                    key='add_user_role_selectbox',
-                    index=None)
+        #         st.selectbox(
+        #             label="**Team-Role**",
+        #             options=roles,
+        #             placeholder='Select Team-Role',
+        #             key='add_user_role_selectbox',
+        #             index=None)
                 
-            st.button(
-                label="Add User",
-                width='stretch',
-                key='add_user_button')
+        #     st.button(
+        #         label="Add User",
+        #         width='stretch',
+        #         key='add_user_button')
             
 
         with tab2:
@@ -92,10 +92,11 @@ def user_management():
             # create dataframe
             df = pd.DataFrame(documents)
 
-            # remove other columns
-            df.drop(columns=['_id', 'password_hash', 'user_info', 'leave_credits', 'leave_data', 'user_events', 'role'], inplace=True)
-
-            st.dataframe(df)
+            # rename columns
+            df.rename(columns={'name': 'Full Name', 'department': 'Department', 'team': 'Team', 'team_role': 'Team Role'}, inplace=True)
+            
+            # display dataframe
+            st.dataframe(df[['Full Name', 'Department', 'Team', 'Team Role']], hide_index=True)
         
         with tab3:
             st.subheader("🪪Leave Credits")
@@ -106,6 +107,9 @@ def user_management():
             documents = get_collection('users').find()
             for document in documents:
                 user_list.append(document['name'])
+            
+            # sort alphabetically
+            user_list = sorted(user_list)
             
             with col1:
                 selected_name = st.selectbox(
@@ -267,47 +271,47 @@ def user_management():
         ''''''
         
     
-    if st.session_state['add_user_button']:
+    # if st.session_state['add_user_button']:
         
-        # get user leave data collection
-        collection = get_collection('user_leave_data')
+    #     # get user leave data collection
+    #     collection = get_collection('user_leave_data')
         
-        # create leave credit document
-        leave_credits_collection = get_collection('leave_credits')
-        leave_credits_doc = {
-            'Sick':10,
-            'Vacation':10,
-            'Others':0,
-            'Birthday':1,
-            'Bereavement':3,
-            'Emergency':2,
-            'Maternity':0,
-            'Paternity':0}
+    #     # create leave credit document
+    #     leave_credits_collection = get_collection('leave_credits')
+    #     leave_credits_doc = {
+    #         'Sick':10,
+    #         'Vacation':10,
+    #         'Others':0,
+    #         'Birthday':1,
+    #         'Bereavement':3,
+    #         'Emergency':2,
+    #         'Maternity':0,
+    #         'Paternity':0}
         
-        leave_credits_collection.insert_one(leave_credits_doc)
-        leave_credits_id = leave_credits_doc['_id']
+    #     leave_credits_collection.insert_one(leave_credits_doc)
+    #     leave_credits_id = leave_credits_doc['_id']
         
-        # hash password
-        ph = PasswordHasher()
-        hashed_password = ph.hash(st.session_state.get('add_user_password_input'))
+    #     # hash password
+    #     ph = PasswordHasher()
+    #     hashed_password = ph.hash(st.session_state.get('add_user_password_input'))
 
-        user_info = {
-            'username': st.session_state.get('add_user_name_input'),
-            'name': st.session_state.get('add_user_fname_input'),
-            'password_hash': hashed_password,
-            'rights': st.session_state.get('add_user_permission_selectbox'),
-            'leave_credits': leave_credits_id,
-            'department': st.session_state.get('add_user_department_selectbox'),
-            'team': st.session_state.get('add_user_team_selectbox'),
-            'team-role': st.session_state.get('add_user_role_selectbox'),
-            'address': '',
-            'mobile_number': '',
-            'birthdate': ''}
+    #     user_info = {
+    #         'username': st.session_state.get('add_user_name_input'),
+    #         'name': st.session_state.get('add_user_fname_input'),
+    #         'password_hash': hashed_password,
+    #         'rights': st.session_state.get('add_user_permission_selectbox'),
+    #         'leave_credits': leave_credits_id,
+    #         'department': st.session_state.get('add_user_department_selectbox'),
+    #         'team': st.session_state.get('add_user_team_selectbox'),
+    #         'team-role': st.session_state.get('add_user_role_selectbox'),
+    #         'address': '',
+    #         'mobile_number': '',
+    #         'birthdate': ''}
         
-        user_collection = get_collection('users')
-        user_collection.insert_one(user_info)
+    #     user_collection = get_collection('users')
+    #     user_collection.insert_one(user_info)
 
-        st.toast("User added successfully!")
+    #     st.toast("User added successfully!")
     
 
     

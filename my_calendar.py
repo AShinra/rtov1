@@ -13,16 +13,16 @@ def my_calendar(team: str):
     events = my_events(team)
 
     # recurring holidays (Jan 1 - New Year's Day, Dec 25 - Christmas Day, Dec 30 - Rizal Day, Jun 12 - Independence Day)
-    events.append({"title": "New Year's Day","rrule": {"freq": "yearly","bymonth": 1,"bymonthday": 1},"backgroundColor": "red", "event_type": "Holiday"})
-    events.append({"title": "Christmas Day","rrule": {"freq": "yearly","bymonth": 12,"bymonthday": 25},"backgroundColor": "red", "event_type": "Holiday"})
-    events.append({"title": "All Saints Day","rrule": {"freq": "yearly","bymonth": 11,"bymonthday": 1},"backgroundColor": "red", "event_type": "Holiday"})
-    events.append({"title": "Rizal Day","rrule": {"freq": "yearly","bymonth": 12,"bymonthday": 30},"backgroundColor": "red", "event_type": "Holiday"})
-    events.append({"title": "Independence Day","rrule": {"freq": "yearly","bymonth": 6,"bymonthday": 12},"backgroundColor": "red", "event_type":"Holiday"})
-
-    # get_collection('calendar_events')
-    # company_doc = get_collection('calendar_events').find_one({'team': 'Company'})
-    # for doc in company_doc['events']:
-    #     events.append(doc)
+    events.append({"title": "New Year's Day","rrule": {"freq": "yearly","bymonth": 1,"bymonthday": 1},"textColor": "red", "backgroundColor": "black", "event_type": "Holiday"})
+    events.append({"title": "Independence Day","rrule": {"freq": "yearly","bymonth": 6,"bymonthday": 12},"textColor": "red", "backgroundColor": "black", "event_type":"Holiday"})
+    events.append({"title": "All Saints Day","rrule": {"freq": "yearly","bymonth": 11,"bymonthday": 1},"textColor": "orange", "backgroundColor": "black", "event_type": "Special Non-Working Holiday"})
+    events.append({"title": "All Souls Day","rrule": {"freq": "yearly","bymonth": 11,"bymonthday": 2},"textColor": "orange", "backgroundColor": "black", "event_type": "Special Non-Working Holiday"})
+    events.append({"title": "Bonifacio Day","rrule": {"freq": "yearly","bymonth": 11,"bymonthday": 30},"textColor": "red", "backgroundColor": "black", "event_type": "Holiday"})
+    events.append({"title": "Feast of the Immaculate Conception","rrule": {"freq": "yearly","bymonth": 12,"bymonthday": 8},"textColor": "orange", "backgroundColor": "black", "event_type": "Special Non-Working Holiday"})
+    events.append({"title": "Christmas Day","rrule": {"freq": "yearly","bymonth": 12,"bymonthday": 24},"textColor": "orange", "backgroundColor": "black", "event_type": "Special Non-Working Holiday"})
+    events.append({"title": "Christmas Day","rrule": {"freq": "yearly","bymonth": 12,"bymonthday": 25},"textColor": "red", "backgroundColor": "black", "event_type": "Holiday"})
+    events.append({"title": "Rizal Day","rrule": {"freq": "yearly","bymonth": 12,"bymonthday": 30},"textColor": "red", "backgroundColor": "black", "event_type": "Holiday"})
+    events.append({"title": "New Year's Eve","rrule": {"freq": "yearly","bymonth": 12,"bymonthday": 31},"textColor": "orange", "backgroundColor": "black", "event_type": "Special Non-Working Holiday"})
 
     # sample formatted events
     # events = [
@@ -42,8 +42,8 @@ def my_calendar(team: str):
             },
         }
 
+    st.write(':red[Regular Holiday]')
     calendar(events=events, options=options)
-
 
 
 def my_events(team: str):
@@ -56,8 +56,13 @@ def my_events(team: str):
     if team == 'Management':
         documents = calendar_data_collection.find({})
     else:
-        documents = calendar_data_collection.find({
-            "team": team})
+        query = {
+            '$or': [
+                {'team': team},
+                {'team': None}
+            ]
+        }
+        documents = calendar_data_collection.find(query)
         
     for doc in documents:
         events.append({
@@ -78,14 +83,8 @@ def team_calendar(rights: str, fname: str):
     team = user_document['team']
     team_role = user_document['team_role']
 
-    calendar_events_collection = get_collection('calendar_events')
-
-    # get related document ids
-    role_id, info_id, leave_id, leave_data_id, leave_credits_id, calendar_events_id = get_user_document_ids(user_document)
-
-    # get user role document
-    role_collection = get_collection('user_role')
-    role_document = role_collection.find_one({'_id': ObjectId(role_id)})
+    # get calendar events collection
+    calendar_events_collection = get_collection('calendar_data')
 
     my_team = team
     if my_team == 'Management':
@@ -100,23 +99,112 @@ def team_calendar(rights: str, fname: str):
         tab1, = st.tabs(['📅**Calendar**'])
 
     with tab1:
-        st.write(team)
         my_calendar(team)
     
     if rights == 'admin':
         with tab2:
-            st.markdown("### Company Holidays")
+            st.markdown("### Holidays and Events")
             gradient_line()
-            st.markdown("""
-            - **New Year's Day** - January 1
-            - **Independence Day** - June 12
-            - **All Saints Day** - November 1
-            - **Rizal Day** - December 30
-            - **Christmas Day** - December 25
-            """)
+            colx, coly = st.columns(2)
+            with colx:
+                st.markdown('#### Recurring Holidays')
+                gradient_line()                
+                st.markdown(
+                        f"""
+                        <span style="color:{'red'}">
+                        <strong>New Year's Day</strong></span>
+                        <span> (Regular Holiday) - January 1</span>""",unsafe_allow_html=True)
+                st.markdown(
+                        f"""
+                        <span style="color:{'red'}">
+                        <strong>Independence Day</strong></span>
+                        <span> (Regular Holiday) - June 12</span>""",unsafe_allow_html=True)
+                st.markdown(
+                        f"""
+                        <span style="color:{'orange'}">
+                        <strong>All Saints Day</strong></span>
+                        <span> (Special Non-Working Holiday) - November 1</span>""",unsafe_allow_html=True)
+                st.markdown(
+                        f"""
+                        <span style="color:{'orange'}">
+                        <strong>All Souls Day Day</strong></span>
+                        <span> (Regular Holiday) - November 2</span>""",unsafe_allow_html=True)
+                st.markdown(
+                        f"""
+                        <span style="color:{'red'}">
+                        <strong>Bonifacio Day</strong></span>
+                        <span> (Regular Holiday) - November 30</span>""",unsafe_allow_html=True)
+                st.markdown(
+                        f"""
+                        <span style="color:{'orange'}">
+                        <strong>Feast of the Immaculate Conception</strong></span>
+                        <span> (Special Non-Working Holiday) - December 8</span>""",unsafe_allow_html=True)
+                st.markdown(
+                        f"""
+                        <span style="color:{'orange'}">
+                        <strong>Christmas Eve</strong></span>
+                        <span> (Special Non-Working Holiday) - December 24</span>""",unsafe_allow_html=True)
+                st.markdown(
+                        f"""
+                        <span style="color:{'red'}">
+                        <strong>Christmas Day</strong></span>
+                        <span> (Regular Holiday) - December 25</span>""",unsafe_allow_html=True)
+                st.markdown(
+                        f"""
+                        <span style="color:{'red'}">
+                        <strong>Rizal Day</strong></span>
+                        <span> (Regular Holiday) - December 30</span>""",unsafe_allow_html=True)
+                st.markdown(
+                        f"""
+                        <span style="color:{'orange'}">
+                        <strong>New Year's Eve</strong></span>
+                        <span> (Special Non-Working Holiday) - December 31</span>""",unsafe_allow_html=True)
+                
+            
+            with coly:
+                st.markdown("#### Other Events/Holidays")
+                gradient_line()
+            
+                query = {
+                    '$or': [
+                        {'event_type': 'Company Event'},
+                        {'event_type': 'Observance'},
+                        {'event_type': 'Regular Holiday'},
+                        {'event_type': 'Special Non-Working Holiday'},
+                        {'event_type': 'Special Working Holiday'},
+                    ]
+                }
 
-            col1, col2, col3 = st.columns([2, 5, 7])
+                event_documents = calendar_events_collection.find(query)
+                for event_document in event_documents:
+                    font_color = event_document['textColor']
+                    event_title = event_document['title']
+                    event_type = event_document['event_type']
+                    event_date = datetime.strptime(event_document['start'], "%Y-%m-%d").strftime("%B %d, %Y")
+
+                    st.markdown(
+                        f"""
+                        <span style="color:{font_color}">
+                        <strong>{event_title}</strong></span>
+                        <span> ({event_type}) - {event_date}</span>""",unsafe_allow_html=True)
+                    
+
+            col1, col2, col3 = st.columns([4, 6, 4])
             with col1:
+
+                event_type_dict = {
+                    'Company Event':['green', 'black'],
+                    'Observance':['yellow', 'black'],
+                    'Regular Holiday':['red', 'black'],
+                    'Special Non-Working Holiday':['orange', 'black'],
+                    'Special Working Holiday':['blue', 'black']
+                }
+
+                # get event type_list
+                event_type_list = []
+                for event_type, colors in event_type_dict.items():
+                    event_type_list.append(event_type)
+
                 st.markdown("#### Add Event")
                 gradient_line()
                 event_date = st.date_input(
@@ -125,51 +213,48 @@ def team_calendar(rights: str, fname: str):
                 event_title = st.text_input(
                     label="Event Title",
                     key='event_title_input')
+                event_type_select = st.selectbox(
+                    label="Event Type",
+                    options=event_type_list,
+                    key='event_type_select_input',
+                    placeholder='Select Event Type',
+                    index=None)
                 st.button(
                     label="Add Event",
                     key='add_event_button',
-                    use_container_width='stretch')
-            
-            with col2:
-                st.markdown("#### Events/Holidays Summary")
-                gradient_line()
-                company_events_doc = calendar_events_collection.find_one({'team': 'Company'})
-                company_events = company_events_doc['events']
-                df_events = pd.DataFrame(company_events)
-                if not df_events.empty:
-                    df_events.drop(columns=['backgroundColor', 'textColor'], inplace=True)
-                    df_events.rename(columns={'start': 'Date', 'title': 'Event/Holiday'}, inplace=True)
-                    st.dataframe(df_events, hide_index=True)
-
-                else:
-                    st.markdown("### No Events to Display")
+                    use_container_width='stretch')            
             
             if st.session_state.get('add_event_button'):
                 event_input = datetime.combine(st.session_state.event_date_input, time.min)
                 event_date_str = event_input.strftime("%Y-%m-%d")
                 event_title_str = st.session_state.event_title_input
+                event_type_str = st.session_state.event_type_select_input
 
-                # get company calendar events document
-                company_calendar_events_document = calendar_events_collection.find_one({'team': 'Company'})
-
-                result = calendar_events_collection.update_one(
-                    {"team": "Company",
-                        "events": {
-                            "$not": {
-                                "$elemMatch": {"title": event_title_str,
-                                               "start": event_date_str,
-                                               "backgroundColor": "red",
-                                               "textColor": "white"}}}},
-                                               {"$push": {"events": {
-                                                   "title": event_title_str,
-                                                   "start": event_date_str,
-                                                   "backgroundColor": "red",
-                                                   "textColor": "white"}}})
+                exists = calendar_events_collection.find_one(
+                    {'title': event_title_str,
+                     'start': event_date_str,
+                     'event_type': event_type_str})
                 
-                if result.modified_count == 1:
+                if not exists:
+                    
+                    # get event fontcolor and bgcolor
+                    font_color = event_type_dict[event_type_str][0]
+                    bg_color = event_type_dict[event_type_str][-1]
+                    
+                    calendar_events_collection.insert_one({
+                        'leave_id': None,
+                        'title': event_title_str,
+                        'start': event_date_str,
+                        'backgroundColor': bg_color,
+                        'textColor': font_color,
+                        'team': None,
+                        'event_type': event_type_str
+                    })
                     st.rerun()
                     st.toast("✅ Event added to calendar!")
                 else:
                     st.toast("⚠️ Event already exists")
+
+                
 
     

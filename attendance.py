@@ -25,7 +25,7 @@ def user_info(fname: str, rights: str):
     birthdate = user_document['birthdate']
 
     # get related document ids
-    role_id, info_id, leave_id, leave_data_id, leave_credits_id, calendar_events_id = get_user_document_ids(user_document)    
+    leave_id = user_document['leave_credits']
 
     # get related documents
     user_leave_data_collection = get_collection('user_leave_data')
