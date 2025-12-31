@@ -42,7 +42,7 @@ def my_calendar(team: str):
             },
         }
 
-    st.write(':red[Regular Holiday]')
+    st.markdown(':red[▫️Regular Holiday] :orange[▫️Special Non-Working Holiday] :blue[▫️Special Working Holiday] :yellow[▫️Observance] :green[▫️Company Event]')
     calendar(events=events, options=options)
 
 
