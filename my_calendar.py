@@ -23,7 +23,28 @@ def my_calendar(team: str):
     events.append({"title": "Christmas Day","rrule": {"freq": "yearly","bymonth": 12,"bymonthday": 25},"textColor": "red", "backgroundColor": "black", "event_type": "Holiday"})
     events.append({"title": "Rizal Day","rrule": {"freq": "yearly","bymonth": 12,"bymonthday": 30},"textColor": "red", "backgroundColor": "black", "event_type": "Holiday"})
     events.append({"title": "New Year's Eve","rrule": {"freq": "yearly","bymonth": 12,"bymonthday": 31},"textColor": "orange", "backgroundColor": "black", "event_type": "Special Non-Working Holiday"})
+    
+    # append birthdays
+    documents = get_collection('users').find({})
+    for document in documents:
+        if document['birthdate']:
+            fname = document['name']
+            birthdate_month = document['birthdate'].split('-')[1]
 
+            try:
+                birthdate_month = int(birthdate_month.lstrip('0'))
+            except:
+                pass
+            
+            birthdate_day = document['birthdate'].split('-')[-1]
+            
+            try:
+                birthdate_day = int(birthdate_day.lstrip('0'))
+            except:
+                pass
+
+            events.append({"title": f"{fname}-Birthday", "rrule": {"freq": "yearly","bymonth": birthdate_month,"bymonthday": birthdate_day},"textColor": "white", "backgroundColor": "purple", "event_type": "Birthday"})
+        
     # sample formatted events
     # events = [
     #     {"title": "Special Holiday", "start": "2025-12-08", "backgroundColor": "red"},
@@ -33,6 +54,7 @@ def my_calendar(team: str):
 
     options = {
         "initialView": "dayGridMonth",
+        # "showNonCurrentDates": False,
         'eventClick': True,
         'dateClick': False,
         "headerToolbar": {

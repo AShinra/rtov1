@@ -22,7 +22,10 @@ def user_info(fname: str, rights: str):
     department = user_document['department']
     address = user_document['address']
     mobile_number = user_document['mobile_number']
-    birthdate = user_document['birthdate']
+
+    birthdate_str = user_document['birthdate']
+    date_obj = datetime.strptime(birthdate_str, "%Y-%m-%d")
+    birthdate = date_obj.strftime("%B %d, %Y")
 
     # get related document ids
     leave_id = user_document['leave_credits']
