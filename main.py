@@ -70,4 +70,7 @@ def main(fname: str, rights: str):
     elif selected_option == 'Reports':
         generate_report()
     
+    else:
+        st.markdown('#### ')
+    
     

@@ -95,6 +95,30 @@ def user_info(fname: str, rights: str):
         with tab1:
             st.markdown("### Leave Application")
             gradient_line()
+
+            if team_role != 'Member':
+                member_apply = st.checkbox(
+                    label='Member Application')
+                
+                if member_apply:
+                    docs = user_collection.find({
+                        'team':team,
+                        'team_role':'Member'})
+                    
+                    member_list = []
+                    
+                    for doc in docs:
+                        member_list.append(doc['name'])
+                    
+                    st.selectbox(
+                        label='Select Member',
+                        options=member_list,
+                        placeholder='Select Member',
+                        index=None,
+                        key='member_name')
+                    
+                    fname = st.session_state['member_name']
+
             st.selectbox(
                 label="Select Leave Type",
                 options=leave_types,

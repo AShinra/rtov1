@@ -43,7 +43,13 @@ def my_calendar(team: str):
             except:
                 pass
 
-            events.append({"title": f"{fname}-Birthday", "rrule": {"freq": "yearly","bymonth": birthdate_month,"bymonthday": birthdate_day},"textColor": "white", "backgroundColor": "purple", "event_type": "Birthday"})
+            events.append({
+                "title": f"{fname}-Birthday",
+                "rrule": {"freq": "yearly","bymonth": birthdate_month,"bymonthday": birthdate_day},
+                "textColor": "white",
+                "backgroundColor": "purple",
+                "event_type": "Birthday"
+                })
         
     # sample formatted events
     # events = [
@@ -55,15 +61,15 @@ def my_calendar(team: str):
     options = {
         "initialView": "dayGridMonth",
         # "showNonCurrentDates": False,
-        'eventClick': True,
-        'dateClick': False,
+        # 'eventClick': True,
+        # 'dateClick': False,
         "headerToolbar": {
             "left": "prev,next today",
             "center": "title",
             "right": "dayGridMonth,timeGridWeek"
             },
         }
-
+    
     st.markdown(':red[▫️Regular Holiday] :orange[▫️Special Non-Working Holiday] :blue[▫️Special Working Holiday] :yellow[▫️Observance] :green[▫️Company Event]')
     calendar(events=events, options=options)
 
