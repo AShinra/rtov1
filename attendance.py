@@ -101,9 +101,12 @@ def user_info(fname: str, rights: str):
                     label='Member Application')
                 
                 if member_apply:
-                    docs = user_collection.find({
-                        'team':team,
-                        'team_role':'Member'})
+                    if team=='Management':
+                        docs = user_collection.find({})
+                    else:
+                        docs = user_collection.find({
+                            'team':team,
+                            'team_role':'Member'})
                     
                     member_list = []
                     
