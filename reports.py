@@ -1,5 +1,5 @@
 import streamlit as st
-from common import gradient_line
+from common import gradient_line, thin_gradient_line, center_num, center_text, center_h5_text, center_h4_text
 from admin_tools import get_collection
 import pandas as pd
 from datetime import datetime
@@ -24,9 +24,6 @@ def generate_report():
 
     year_list = set(df['Year'].to_list())
 
-    st.markdown("### Leave Breakdown")
-    gradient_line()
-
     st.selectbox(
         label='Select Year',
         label_visibility='collapsed',
@@ -45,9 +42,8 @@ def generate_report():
     leave_types = [
         'Bereavement', 'Emergency', 'Maternity', 'Others', 'Paternity', 'Sick', 'Vacation']
     
-    gradient_line()
-    st.markdown(f'##### Team Leave Summary')
-    gradient_line()
+    center_h4_text('Leave Summary')
+    thin_gradient_line()
 
     col_widths = [2.5] + [1] * len(months_abr)
     cols = st.columns(col_widths)
@@ -55,106 +51,68 @@ def generate_report():
     for i, col in enumerate(cols):
         if i==0:
             with col:
-                st.markdown(f'###### Team')
+                center_text('Team')
+                thin_gradient_line()
                 for _team in teams:
-                    st.markdown(f'###### {_team}')
+                    center_text(_team, 'lightblue')
         else:
             with col:
-                st.markdown(f'###### {months_abr[i-1]}')
+                center_text(months_abr[i-1])
+                thin_gradient_line()
                 for _team in teams:
                     team_sum = ((df["Month"]==months[i-1]) & (df["Year"]==st.session_state["year_select"]) & (df["team"]==_team)).sum()
-                    if team_sum>0:
-                        st.markdown(f'###### :red[{team_sum}]')
-                    else:
-                        st.markdown(f'###### {team_sum}')
+                    center_num(team_sum, 'red')
+                    
+    st.markdown('---')
+    center_h4_text('Leave Breakdown')
+    thin_gradient_line()
 
-    gradient_line()
-    st.markdown(f'##### Leave Type Summary')
-    gradient_line()
+    # create name_list
+    name_list = []
+    users_documents = get_collection('users').find({})
+    for doc in users_documents:
+        name_list.append(doc['name'])
+    
+    name_list = sorted(name_list)
+    
 
-    col_widths = [2.5] + [1] * len(months_abr)
-    cols = st.columns(col_widths)
+    my_columns = ['Name', 'Team', '1st Half VL', '1st Half SL', '1st Half Others', '2nd Half VL', '2nd Half SL', '2nd Half Others']
+    first_half = ['January', 'February', 'March', 'April', 'May', 'June']
+    second_half = ['July', 'August', 'September', 'October', 'November', 'December']
+
+    col_width = [1.2] + [1]*(len(my_columns)-1)
+    cols = st.columns(col_width)
 
     for i, col in enumerate(cols):
-        if i==0:
-            with col:
-                st.markdown(f'###### Type')
-                for _leave in leave_types:
-                    st.markdown(f'###### {_leave}')
-        else:
-            with col:
-                st.markdown(f'###### {months_abr[i-1]}')
-                for _leave in leave_types:
-                    leave_sum = ((df["Month"]==months[i-1]) & (df["Year"]==st.session_state["year_select"]) & (df["type"]==_leave)).sum()
-                    if leave_sum>0:
-                        st.markdown(f'###### :red[{leave_sum}]')
-                    else:
-                        st.markdown(f'###### {leave_sum}')
-    
-    gradient_line()
-    
-    team_selection = st.selectbox(
-        label='Select Team',
-        label_visibility='collapsed',
-        options=teams,
-        placeholder='Select Team',
-        index=None,
-        width=150)
-    
-    gradient_line()
+        with col:
+            center_text(my_columns[i])
+            thin_gradient_line()
+            for _name in name_list:
+                if i==0:
+                    center_text(_name, 'lightblue')
+                elif i==1:
+                    name_document = get_collection('users').find_one({'name':_name})
+                    # st.markdown(f"###### {name_document['team']}")
+                    center_text(name_document['team'], 'lightblue')
+                elif i==2:
+                    leave_sum = ((df["Year"]==st.session_state["year_select"]) & (df["user"]==_name) & (df["Month"].isin(first_half)) & (df['type']=='Vacation')).sum()
+                    center_num(leave_sum, 'red')
+                elif i==3:
+                    leave_sum = ((df["Year"]==st.session_state["year_select"]) & (df["user"]==_name) & (df["Month"].isin(first_half)) & (df['type']=='Sick')).sum()
+                    center_num(leave_sum, 'red')
+                elif i==4:
+                    leave_sum = ((df["Year"]==st.session_state["year_select"]) & (df["user"]==_name) & (df["Month"].isin(first_half)) & (df['type']=='Others')).sum()
+                    center_num(leave_sum, 'red')
+                elif i==5:
+                    leave_sum = ((df["Year"]==st.session_state["year_select"]) & (df["user"]==_name) & (df["Month"].isin(second_half)) & (df['type']=='Vacation')).sum()
+                    center_num(leave_sum, 'red')
+                elif i==6:
+                    leave_sum = ((df["Year"]==st.session_state["year_select"]) & (df["user"]==_name) & (df["Month"].isin(second_half)) & (df['type']=='Sick')).sum()
+                    center_num(leave_sum, 'red')
+                elif i==7:
+                    leave_sum = ((df["Year"]==st.session_state["year_select"]) & (df["user"]==_name) & (df["Month"].isin(second_half)) & (df['type']=='Others')).sum()
+                    center_num(leave_sum, 'red')
 
-    if team_selection:
-        # create member list
-        team_member_documents = get_collection('users').find({
-            'team': team_selection})
-        
-        team_members = []
-        for doc in team_member_documents:
-            team_members.append(doc['name'])
-        
-        team_members = sorted(team_members)
-
-        col_widths = [2.5] + [1] * len(months_abr)
-        cols = st.columns(col_widths)
-
-        for i, col in enumerate(cols):
-            if i==0:
-                with col:
-                    st.markdown(f'###### ')
-                    for team_member in team_members:
-                        leave_sum = ((df["Year"]==st.session_state["year_select"]) & (df["user"]==team_member)).sum()
-                        st.markdown(f'###### {team_member} [:red[{leave_sum}]]')
-            else:
-                with col:
-                    st.markdown(f'###### {months_abr[i-1]}')
-                    for team_member in team_members:
-                        leave_sum = ((df["Month"]==months[i-1]) & (df["Year"]==st.session_state["year_select"]) & (df["user"]==team_member)).sum()
-                        if leave_sum>0:
-                            st.markdown(f'###### :red[{leave_sum}]')
-                        else:
-                            st.markdown(f'###### {leave_sum}')
-
-        gradient_line()
-        
-        col_widths = [1.5] + [1] * len(leave_types)
-        cols = st.columns(col_widths)
-
-        for i, col in enumerate(cols):
-            if i==0:
-                with col:
-                    st.markdown(f'###### ')
-                    for team_member in team_members:
-                        leave_sum = ((df["Year"]==st.session_state["year_select"]) & (df["user"]==team_member) & (df["type"].isin(leave_types))).sum()
-                        st.markdown(f'###### {team_member} [:red[{leave_sum}]]')
-            else:
-                with col:
-                    st.markdown(f'###### {leave_types[i-1]}')
-                    for team_member in team_members:
-                        leave_sum = ((df["Year"]==st.session_state["year_select"]) & (df["type"]==leave_types[i-1]) & (df["user"]==team_member)).sum()
-                        if leave_sum>0:
-                            st.markdown(f'###### :red[{leave_sum}]')
-                        else:
-                            st.markdown(f'###### {leave_sum}')
     
 
 
