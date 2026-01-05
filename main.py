@@ -18,8 +18,8 @@ def main(fname: str, rights: str):
         icons = ['house', 'people-fill', 'check-square', 'calendar3', 'bar-chart', 'book-half']
     else:
         menu_title = 'User Dashboard'
-        menu_options = ['Home', 'Leave Management', 'Team Calendar', 'Reports', 'Food for the Soul']
-        icons = ['house', 'check-square', 'calendar3', 'bar-chart', 'book-half']
+        menu_options = ['Home', 'Leave Management', 'Team Calendar', 'Food for the Soul']
+        icons = ['house', 'check-square', 'calendar3', 'book-half']
     with st.sidebar:
 
         digital_clock()
