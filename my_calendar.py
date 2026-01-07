@@ -70,8 +70,11 @@ def my_calendar(team: str):
             },
         }
     
+    custom_css="""
+    .fc-event-title {font-size: 15px !important; /* Adjust the event title font size */}"""
+    
     st.markdown(':red[▫️Regular Holiday] :orange[▫️Special Non-Working Holiday] :blue[▫️Special Working Holiday] :yellow[▫️Observance] :green[▫️Company Event]')
-    calendar(events=events, options=options)
+    calendar(events=events, options=options, custom_css=custom_css)
 
 
 def my_events(team: str):

@@ -3,7 +3,7 @@ from db import get_collection, get_leave_types
 from bson import ObjectId
 from my_calendar import my_calendar, my_events
 from datetime import datetime, time, date
-from common import gradient_line, get_user_document_ids
+from common import gradient_line, center_h5_text, center_text, center_num
 import pandas as pd
 
 
@@ -64,11 +64,12 @@ def user_info(fname: str, rights: str):
         with st.expander(label="ℹ️ Leave Credits Information"):
             colb1, colb2, colb3 = st.columns([4, 3, 4])
             with colb1:
-                st.markdown("##### Type")
+                center_h5_text('Type')
             with colb2:
-                st.markdown("##### Used")
+                center_h5_text('Used')
             with colb3:
-                st.markdown("##### Available")
+                center_h5_text('Available   ')
+                
 
             current_year = date.today().year
                     
@@ -76,7 +77,7 @@ def user_info(fname: str, rights: str):
 
                 try:
                     with colb1:
-                        st.markdown(f'###### {leave_type}')
+                        center_text(leave_type)
                     with colb2:
                         leave_count = user_leave_data_collection.count_documents({
                             'start': {
@@ -85,9 +86,9 @@ def user_info(fname: str, rights: str):
                             'user': fname,
                             'type': leave_type})
 
-                        st.markdown(f'###### {leave_count}')
+                        center_num(leave_count)
                     with colb3:
-                        st.markdown(f"###### {leave_credits_document[leave_type]-leave_count}")
+                        center_num(leave_credits_document[leave_type]-leave_count)
                 except:
                     pass
 

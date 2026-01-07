@@ -76,43 +76,62 @@ def generate_report():
     name_list = sorted(name_list)
     
 
-    my_columns = ['Name', 'Team', '1st Half VL', '1st Half SL', '1st Half Others', '2nd Half VL', '2nd Half SL', '2nd Half Others']
+    my_columns = ['Name', '1st Half VL', '1st Half SL', '1st Half Others', '2nd Half VL', '2nd Half SL', '2nd Half Others']
     first_half = ['January', 'February', 'March', 'April', 'May', 'June']
     second_half = ['July', 'August', 'September', 'October', 'November', 'December']
+    teams = ['Broadcast', 'Online', 'Print', 'Provincial','Management']
 
-    col_width = [1.2] + [1]*(len(my_columns)-1)
-    cols = st.columns(col_width)
+    for _team in teams:
+        df_team = pd.DataFrame(get_collection('users').find({'team':_team}))
+        name_list = df_team['name'].to_list()
+        name_list = sorted(name_list, key=lambda x: x.rsplit(" ", 1)[-1])
 
-    for i, col in enumerate(cols):
-        with col:
-            center_text(my_columns[i])
+        with st.container(border=True):
+            center_h5_text(f'{_team} Team', 'lightblue')
             thin_gradient_line()
-            for _name in name_list:
-                if i==0:
-                    center_text(_name, 'lightblue')
-                elif i==1:
-                    name_document = get_collection('users').find_one({'name':_name})
-                    # st.markdown(f"###### {name_document['team']}")
-                    center_text(name_document['team'], 'lightblue')
-                elif i==2:
-                    leave_sum = ((df["Year"]==st.session_state["year_select"]) & (df["user"]==_name) & (df["Month"].isin(first_half)) & (df['type']=='Vacation')).sum()
-                    center_num(leave_sum, 'red')
-                elif i==3:
-                    leave_sum = ((df["Year"]==st.session_state["year_select"]) & (df["user"]==_name) & (df["Month"].isin(first_half)) & (df['type']=='Sick')).sum()
-                    center_num(leave_sum, 'red')
-                elif i==4:
-                    leave_sum = ((df["Year"]==st.session_state["year_select"]) & (df["user"]==_name) & (df["Month"].isin(first_half)) & (df['type']=='Others')).sum()
-                    center_num(leave_sum, 'red')
-                elif i==5:
-                    leave_sum = ((df["Year"]==st.session_state["year_select"]) & (df["user"]==_name) & (df["Month"].isin(second_half)) & (df['type']=='Vacation')).sum()
-                    center_num(leave_sum, 'red')
-                elif i==6:
-                    leave_sum = ((df["Year"]==st.session_state["year_select"]) & (df["user"]==_name) & (df["Month"].isin(second_half)) & (df['type']=='Sick')).sum()
-                    center_num(leave_sum, 'red')
-                elif i==7:
-                    leave_sum = ((df["Year"]==st.session_state["year_select"]) & (df["user"]==_name) & (df["Month"].isin(second_half)) & (df['type']=='Others')).sum()
-                    center_num(leave_sum, 'red')
+            col_width = [1.2] + [1]*(len(my_columns)-1)
+            cols = st.columns(col_width)    
+            for i, col in enumerate(cols):
+                with col:
+                    center_text(my_columns[i])
+                    thin_gradient_line()
+                    for _name in name_list:
+                        if i==0:
+                            name_parts = _name.split(' ')
+                            j = len(name_parts)
+                            if j==2:
+                                emp_name = f'{name_parts[-1]}, {name_parts[0]}'
+                            elif j>=3:
+                                if name_parts[-2].lower() in ['de', 'del', 'dela']:
+                                    first_name, prelast_name, last_name = _name.rsplit(' ', 2)
+                                    emp_name = f'{prelast_name} {last_name}, {first_name}'
+                                else:
+                                    first_name, last_name = _name.rsplit(' ', 1)
+                                    emp_name = f'{last_name}, {first_name}'
+                                    
 
+
+                            # first_name, last_name = _name.rsplit(' ', 1)
+                            center_text(emp_name, 'lightblue')
+                        elif i==1:
+                            leave_sum = ((df["Year"]==st.session_state["year_select"]) & (df["user"]==_name) & (df["Month"].isin(first_half)) & (df['type']=='Vacation')).sum()
+                            center_num(leave_sum, 'red')
+                        elif i==2:
+                            leave_sum = ((df["Year"]==st.session_state["year_select"]) & (df["user"]==_name) & (df["Month"].isin(first_half)) & (df['type']=='Sick')).sum()
+                            center_num(leave_sum, 'red')
+                        elif i==3:
+                            leave_sum = ((df["Year"]==st.session_state["year_select"]) & (df["user"]==_name) & (df["Month"].isin(first_half)) & (df['type']=='Others')).sum()
+                            center_num(leave_sum, 'red')
+                        elif i==4:
+                            leave_sum = ((df["Year"]==st.session_state["year_select"]) & (df["user"]==_name) & (df["Month"].isin(second_half)) & (df['type']=='Vacation')).sum()
+                            center_num(leave_sum, 'red')
+                        elif i==5:
+                            leave_sum = ((df["Year"]==st.session_state["year_select"]) & (df["user"]==_name) & (df["Month"].isin(second_half)) & (df['type']=='Sick')).sum()
+                            center_num(leave_sum, 'red')
+                        elif i==6:
+                            leave_sum = ((df["Year"]==st.session_state["year_select"]) & (df["user"]==_name) & (df["Month"].isin(second_half)) & (df['type']=='Others')).sum()
+                            center_num(leave_sum, 'red')
+            # st.markdown('---')        
     
 
 
