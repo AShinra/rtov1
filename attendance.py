@@ -97,7 +97,7 @@ def user_info(fname: str, rights: str):
             st.markdown("### Leave Application")
             gradient_line()
 
-            if team_role != 'Member':
+            if team_role in ['Member', 'Lead-Assistant']:
                 member_apply = st.checkbox(
                     label='Member Application')
                 

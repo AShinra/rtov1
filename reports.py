@@ -108,10 +108,6 @@ def generate_report():
                                 else:
                                     first_name, last_name = _name.rsplit(' ', 1)
                                     emp_name = f'{last_name}, {first_name}'
-                                    
-
-
-                            # first_name, last_name = _name.rsplit(' ', 1)
                             center_text(emp_name, 'lightblue')
                         elif i==1:
                             leave_sum = ((df["Year"]==st.session_state["year_select"]) & (df["user"]==_name) & (df["Month"].isin(first_half)) & (df['type']=='Vacation')).sum()
