@@ -97,7 +97,7 @@ def user_info(fname: str, rights: str):
             st.markdown("### Leave Application")
             gradient_line()
 
-            if team_role in ['Member', 'Lead-Assistant']:
+            if team_role not in ['Member', 'Lead-Assistant']:
                 member_apply = st.checkbox(
                     label='Member Application')
                 
@@ -107,7 +107,7 @@ def user_info(fname: str, rights: str):
                     else:
                         docs = user_collection.find({
                             'team':team,
-                            'team_role':'Member'})
+                            'team_role':{'$in': ['Member', 'Lead-Assistant']}})
                     
                     member_list = []
                     
