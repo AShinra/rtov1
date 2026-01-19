@@ -19,7 +19,7 @@ def my_calendar(team: str):
     events.append({"title": "All Souls Day","rrule": {"freq": "yearly","bymonth": 11,"bymonthday": 2},"textColor": "orange", "backgroundColor": "black", "event_type": "Special Non-Working Holiday"})
     events.append({"title": "Bonifacio Day","rrule": {"freq": "yearly","bymonth": 11,"bymonthday": 30},"textColor": "red", "backgroundColor": "black", "event_type": "Holiday"})
     events.append({"title": "Feast of the Immaculate Conception","rrule": {"freq": "yearly","bymonth": 12,"bymonthday": 8},"textColor": "orange", "backgroundColor": "black", "event_type": "Special Non-Working Holiday"})
-    events.append({"title": "Christmas Day","rrule": {"freq": "yearly","bymonth": 12,"bymonthday": 24},"textColor": "orange", "backgroundColor": "black", "event_type": "Special Non-Working Holiday"})
+    events.append({"title": "Christmas Eve","rrule": {"freq": "yearly","bymonth": 12,"bymonthday": 24},"textColor": "orange", "backgroundColor": "black", "event_type": "Special Non-Working Holiday"})
     events.append({"title": "Christmas Day","rrule": {"freq": "yearly","bymonth": 12,"bymonthday": 25},"textColor": "red", "backgroundColor": "black", "event_type": "Holiday"})
     events.append({"title": "Rizal Day","rrule": {"freq": "yearly","bymonth": 12,"bymonthday": 30},"textColor": "red", "backgroundColor": "black", "event_type": "Holiday"})
     events.append({"title": "New Year's Eve","rrule": {"freq": "yearly","bymonth": 12,"bymonthday": 31},"textColor": "orange", "backgroundColor": "black", "event_type": "Special Non-Working Holiday"})
@@ -62,7 +62,7 @@ def my_calendar(team: str):
         "initialView": "dayGridMonth",
         # "showNonCurrentDates": False,
         # 'eventClick': True,
-        # 'dateClick': False,
+        # 'dateClick': True,
         "headerToolbar": {
             "left": "prev,next today",
             "center": "title",
@@ -75,7 +75,7 @@ def my_calendar(team: str):
     
     st.markdown(':red[▫️Regular Holiday] :orange[▫️Special Non-Working Holiday] :blue[▫️Special Working Holiday] :yellow[▫️Observance] :green[▫️Company Event]')
     calendar(events=events, options=options, custom_css=custom_css)
-
+    
 
 def my_events(team: str):
 
