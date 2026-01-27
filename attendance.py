@@ -123,11 +123,9 @@ def user_info(fname: str, rights: str):
                     
                     fname = st.session_state['member_name']
                     doc = get_collection('users').find_one({'name':fname})
-                    member_team = doc['team']
-                    member_role = doc['team_role']
-                    st.write(member_team)
-                    st.write(member_role)
-                    
+                    team = doc['team']
+                    team_role = doc['team_role']
+
 
             st.selectbox(
                 label="Select Leave Type",
