@@ -122,9 +122,10 @@ def user_info(fname: str, rights: str):
                         key='member_name')
                     
                     fname = st.session_state['member_name']
-                    doc = get_collection('users').find_one({'name':fname})
-                    team = doc['team']
-                    team_role = doc['team_role']
+                    if fname:
+                        doc = get_collection('users').find_one({'name':fname})
+                        team = doc['team']
+                        team_role = doc['team_role']
 
 
             st.selectbox(
