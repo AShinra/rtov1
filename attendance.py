@@ -290,7 +290,7 @@ def user_info(fname: str, rights: str):
 
                             st.write(users)
 
-                            users = sorted(users)
+                            # users = sorted(users)
                             select_name = st.selectbox(
                                 label='Select Team Member',
                                 options=users,
