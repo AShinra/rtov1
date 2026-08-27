@@ -287,6 +287,9 @@ def user_info(fname: str, rights: str):
                         with col1:
                             # create a selection box for team members
                             users = set(df_users_team['Name'].to_list())
+
+                            st.write(users)
+
                             users = sorted(users)
                             select_name = st.selectbox(
                                 label='Select Team Member',
